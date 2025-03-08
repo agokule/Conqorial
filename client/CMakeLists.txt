@@ -12,9 +12,25 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/$<CONFIGURATION>")
 
 file(GLOB_RECURSE CLIENT_SOURCES "src/*.cpp" "src/*.h")
 
-add_executable(Conqorial-Client ${CLIENT_SOURCES})
+add_executable(Conqorial-Client ${CLIENT_SOURCES}
+  dependencies/imgui/imgui.cpp
+  dependencies/imgui/imgui_draw.cpp
+  dependencies/imgui/imgui_tables.cpp
+  dependencies/imgui/imgui_widgets.cpp
+  dependencies/imgui/imgui_demo.cpp
+  dependencies/imgui/backends/imgui_impl_sdl3.cpp
+  dependencies/imgui/backends/imgui_impl_sdlrenderer3.cpp
+  dependencies/imgui/misc/cpp/imgui_stdlib.cpp
+)
+
 add_subdirectory(dependencies/SDL-3.2.8 EXCLUDE_FROM_ALL)
-target_include_directories(Conqorial-Client PRIVATE src)
+
+target_include_directories(Conqorial-Client PRIVATE
+  src
+  dependencies/imgui
+  dependencies/imgui/backends
+  dependencies/imgui/misc/cpp
+)
 
 # on Web targets, we need CMake to generate a HTML webpage. 
 if(EMSCRIPTEN)
