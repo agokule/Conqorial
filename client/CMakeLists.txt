@@ -24,6 +24,7 @@ add_executable(Conqorial-Client ${CLIENT_SOURCES}
 )
 
 add_subdirectory(dependencies/SDL-3.2.8 EXCLUDE_FROM_ALL)
+add_subdirectory(../core "${CMAKE_BINARY_DIR}/core" EXCLUDE_FROM_ALL)
 
 target_include_directories(Conqorial-Client PRIVATE
   src
@@ -38,5 +39,10 @@ if(EMSCRIPTEN)
 endif()
 
 target_link_libraries(Conqorial-Client SDL3::SDL3)
+
+target_link_libraries(Conqorial-Client 
+  SDL3::SDL3
+  Conqorial-Core
+)
 
 
