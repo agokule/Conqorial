@@ -2,11 +2,13 @@
 #define MAP_TILE_H
 
 #include "MapTileTypes.h"
-#include "PlayerId.h"
+#include "typedefs.h"
 
 struct MapTile {
     unsigned x;
     unsigned y;
+
+    double elevation;
 
     MapTileType type;
     PlayerId owner;

@@ -5,7 +5,7 @@
 #include "FastNoiseLite/FastNoiseLite.h"
 #include "MapTile.h"
 #include "MapTileTypes.h"
-#include "PlayerId.h"
+#include "typedefs.h"
 
 class Map {
     unsigned width;
@@ -17,7 +17,7 @@ public:
     Map(unsigned width, unsigned height);
 
     void set_tile(unsigned x, unsigned y, MapTileType type, PlayerId owner);
-    MapTile get_tile(unsigned x, unsigned y);
+    MapTile get_tile(unsigned x, unsigned y) const;
 };
 
 #endif // MAP_H

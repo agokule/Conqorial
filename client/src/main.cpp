@@ -13,8 +13,7 @@
 #include "Map.h"
 
 /* This function runs once at startup. */
-SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[])
-{
+SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
     AppState *state = new AppState();
     *appstate = state;
     /* Create the window */
@@ -50,8 +49,7 @@ SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event) {
 }
 
 /* This function runs once per frame, and is the heart of the program. */
-SDL_AppResult SDL_AppIterate(void *appstate)
-{
+SDL_AppResult SDL_AppIterate(void *appstate) {
     AppState *state = static_cast<AppState *>(appstate);
     SDL_Renderer *renderer = state->renderer;
 
