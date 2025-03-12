@@ -7,11 +7,10 @@
 // the minimum elevation of the tile multiplied by 100
 enum class MapTileType : uint8_t {
     Water = 0,
-    Beach = 10,
-    Grass = 30,
-    Hill = 50,
+    Beach = 50,
+    Grass = 55,
+    Hill = 70,
     Mountain = 80,
-
 };
 
 template<typename T>

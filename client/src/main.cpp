@@ -45,6 +45,8 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
     std::cout << "Initializing Map texture\n";
     state->map_texture = init_map_texture(state->map, state->renderer, state->map.get_width(), state->map.get_height());
 
+    SDL_SetRenderDrawBlendMode(state->renderer, SDL_BLENDMODE_BLEND);
+
     return SDL_APP_CONTINUE;
 }
 
@@ -69,7 +71,8 @@ SDL_AppResult SDL_AppIterate(void *appstate) {
     ImGui_ImplSDLRenderer3_NewFrame();
     ImGui::NewFrame();
 
-    SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);  /* black, full alpha */
+    SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
+    // SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
     SDL_RenderClear(renderer);  /* start with a blank canvas. */
 
     ImGui::Begin("Hello there");
@@ -77,8 +80,6 @@ SDL_AppResult SDL_AppIterate(void *appstate) {
     ImGui::ColorEdit4("Choose color", &state->color.x);
 
     ImGui::End();
-
-    std::string message {"Hello World!"};
 
     draw_map_texture(state->map_texture, renderer);
 

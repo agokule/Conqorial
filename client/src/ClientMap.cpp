@@ -1,19 +1,20 @@
 #include "ClientMap.h"
 #include "SDL3/SDL_pixels.h"
 #include "SDL3/SDL_render.h"
+#include <cmath>
 #include <cstdint>
 #include <iostream>
 
 SDL_Color get_tile_color(MapTileType type) {
     switch (type) {
         case MapTileType::Water:
-            return {0, 0, 255, 255};
+            return {0, 0, 220, 255};
         case MapTileType::Beach:
-            return {255, 255, 100, 255};
+            return {215, 215, 0, 255};
         case MapTileType::Grass:
-            return {0, 255, 0, 255};
+            return {13, 159, 0, 255};
         case MapTileType::Hill:
-            return {213, 255, 42, 255};
+            return {8, 89, 0, 255};
         case MapTileType::Mountain:
             return {100, 100, 100, 255};
     }
@@ -45,7 +46,10 @@ SDL_Texture *init_map_texture(const Map &map, SDL_Renderer *renderer, unsigned w
             pixels[y * pitch + x * format->bytes_per_pixel] = color.r;
             pixels[y * pitch + x * format->bytes_per_pixel + 1] = color.g;
             pixels[y * pitch + x * format->bytes_per_pixel + 2] = color.b;
-            pixels[y * pitch + x * format->bytes_per_pixel + 3] = color.a;
+            if (tile.type != MapTileType::Water)
+                pixels[y * pitch + x * format->bytes_per_pixel + 3] = 255 - (std::pow((double)tile.elevation / 100.0, 2)) * 100;
+            else
+                pixels[y * pitch + x * format->bytes_per_pixel + 3] = 255 - tile.elevation * 2.5;
             if (x == width - 1)
                 std::cout << "Drawing map tile: " << (short)tile.elevation << "(" << (short)color.r << " " << (short)color.g << " " << (short)color.b << " " << (short)color.a << ")\n";
         }

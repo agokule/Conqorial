@@ -18,6 +18,12 @@ MapTileType get_tile_type(Elevation elevation) {
 
 Map::Map(unsigned width, unsigned height) : width(width), height(height), tiles(width * height), noise() {
     noise.SetNoiseType(FastNoiseLite::NoiseType::NoiseType_Perlin);
+    noise.SetFractalType(FastNoiseLite::FractalType_FBm);
+    noise.SetFractalOctaves(7);
+    noise.SetFractalLacunarity(2.0);
+    noise.SetFractalGain(0.47);
+    noise.SetFractalWeightedStrength(0.08);
+
 
     unsigned index {};
 
