@@ -9,11 +9,11 @@ SDL_Color get_tile_color(MapTileType type) {
         case MapTileType::Water:
             return {0, 0, 255, 255};
         case MapTileType::Beach:
-            return {255, 255, 0, 255};
+            return {255, 255, 100, 255};
         case MapTileType::Grass:
             return {0, 255, 0, 255};
         case MapTileType::Hill:
-            return {255, 255, 100, 255};
+            return {213, 255, 42, 255};
         case MapTileType::Mountain:
             return {100, 100, 100, 255};
     }
