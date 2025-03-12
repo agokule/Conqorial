@@ -1,7 +1,6 @@
 #include "ClientMap.h"
 #include "SDL3/SDL_render.h"
 #include <iostream>
-#include <string>
 #define SDL_MAIN_USE_CALLBACKS
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_main.h>
