@@ -4,7 +4,6 @@
 #include "typedefs.h"
 
 MapTileType get_tile_type(Elevation elevation) {
-    elevation *= 100;
     if (elevation >= MapTileType::Mountain)
         return MapTileType::Mountain;
     else if (elevation >= MapTileType::Hill)
