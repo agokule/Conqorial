@@ -19,14 +19,11 @@ MapTileType get_tile_type(Elevation elevation) {
 Map::Map(unsigned width, unsigned height) : width(width), height(height), tiles(width * height), noise() {
     noise.SetNoiseType(FastNoiseLite::NoiseType::NoiseType_Perlin);
 
-    // for now, just use the same seed
-    noise.SetSeed(0);
-
     unsigned index {};
 
     for (unsigned y = 0; y < height; y++) {
         for (unsigned x = 0; x < width; x++) {
-            auto elevation = get_elevation(noise, x, y);
+            auto elevation = get_elevation(noise, x, y) * 100;
             tiles[index].type = get_tile_type(elevation);
             tiles[index].elevation = elevation;
             index++;

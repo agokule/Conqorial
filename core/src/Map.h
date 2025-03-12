@@ -18,6 +18,9 @@ public:
 
     void set_tile(unsigned x, unsigned y, MapTileType type, PlayerId owner);
     MapTile get_tile(unsigned x, unsigned y) const;
+
+    unsigned get_width() const { return width; }
+    unsigned get_height() const { return height; }
 };
 
 #endif // MAP_H

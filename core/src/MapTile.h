@@ -3,16 +3,15 @@
 
 #include "MapTileTypes.h"
 #include "typedefs.h"
+#include <cstdint>
 
 struct MapTile {
-    unsigned x;
-    unsigned y;
-
-    double elevation;
+    uint8_t elevation;
 
     MapTileType type;
     PlayerId owner;
 };
+constexpr size_t MAP_TILE_SIZE = sizeof(MapTile);
 
 #endif // MAP_TILE_H
 

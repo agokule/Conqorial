@@ -36,6 +36,8 @@ target_include_directories(Conqorial-Client PRIVATE
 # on Web targets, we need CMake to generate a HTML webpage. 
 if(EMSCRIPTEN)
   set(CMAKE_EXECUTABLE_SUFFIX ".html" CACHE INTERNAL "")
+  set(EMMAKE_CXX_CFLAGS "${EMMAKE_CXX_CFLAGS}")
+  set_target_properties(Conqorial-Client PROPERTIES LINK_FLAGS "${EMMAKE_CXX_CFLAGS}")
 endif()
 
 target_link_libraries(Conqorial-Client SDL3::SDL3)
