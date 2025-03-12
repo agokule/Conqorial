@@ -63,15 +63,8 @@ SDL_Texture *init_map_texture(const Map &map, SDL_Renderer *renderer) {
     return texture;
 }
 
-void draw_map_texture(SDL_Texture *texture, SDL_Renderer *renderer) {
-    SDL_FRect dst_rect;
-
-    /* center this one and make it grow and shrink. */
-    dst_rect.w = (float) texture->w;
-    dst_rect.h = (float) texture->h;
-    dst_rect.x = 0.0f;
-    dst_rect.y = 0.0f;
-    if (!SDL_RenderTexture(renderer, texture, NULL, NULL)) {
+void draw_map_texture(SDL_Texture *texture, SDL_Renderer *renderer, SDL_FRect dst_rect) {
+    if (!SDL_RenderTexture(renderer, texture, NULL, &dst_rect)) {
         std::cerr << "Failed to render texture: " << SDL_GetError() << std::endl;
     }
 }
