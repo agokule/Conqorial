@@ -1,4 +1,5 @@
 #include "ClientMap.h"
+#include "MapTileTypes.h"
 #include "SDL3/SDL_pixels.h"
 #include "SDL3/SDL_render.h"
 #include <cmath>
@@ -20,7 +21,9 @@ SDL_Color get_tile_color(MapTileType type) {
     }
 }
 
-SDL_Texture *init_map_texture(const Map &map, SDL_Renderer *renderer, unsigned width, unsigned height) {
+SDL_Texture *init_map_texture(const Map &map, SDL_Renderer *renderer) {
+    unsigned width = map.get_width(), height = map.get_height();
+
     SDL_Texture *texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_STREAMING, width, height);
     if (!texture) {
         std::cerr << "Failed to create texture: " << SDL_GetError() << std::endl;

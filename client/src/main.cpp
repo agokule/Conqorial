@@ -42,7 +42,7 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
     io.IniFilename = nullptr;
 
     std::cout << "Initializing Map texture\n";
-    state->map_texture = init_map_texture(state->map, state->renderer, state->map.get_width(), state->map.get_height());
+    state->map_texture = init_map_texture(state->map, state->renderer);
 
     SDL_SetRenderDrawBlendMode(state->renderer, SDL_BLENDMODE_BLEND);
 
