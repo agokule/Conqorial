@@ -76,8 +76,8 @@ SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event) {
 
 /* This function runs once per frame, and is the heart of the program. */
 SDL_AppResult SDL_AppIterate(void *appstate) {
-    AppState *const state = static_cast<AppState *>(appstate);
-    SDL_Renderer *renderer = state->renderer;
+    AppState &state = *static_cast<AppState *>(appstate);
+    SDL_Renderer *renderer = state.renderer;
 
     ImGui_ImplSDL3_NewFrame();
     ImGui_ImplSDLRenderer3_NewFrame();
@@ -89,11 +89,11 @@ SDL_AppResult SDL_AppIterate(void *appstate) {
 
     ImGui::Begin("Hello there");
     if (ImGui::Button("Reset view")) {
-        state->dst_map_to_display = { 0, 0, (float)state->map.get_width(), (float)state->map.get_height()};
+        state.dst_map_to_display = { 0, 0, (float)state.map.get_width(), (float)state.map.get_height()};
     }
     ImGui::End();
 
-    draw_map_texture(state->map_texture, renderer, state->dst_map_to_display);
+    draw_map_texture(state.map_texture, renderer, state.dst_map_to_display);
 
     ImGui::Render();
     ImGui_ImplSDLRenderer3_RenderDrawData(ImGui::GetDrawData(), renderer);
