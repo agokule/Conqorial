@@ -1,6 +1,7 @@
 #include "ClientMap.h"
 #include "MapTileTypes.h"
 #include "SDL3/SDL_pixels.h"
+#include "SDL3/SDL_rect.h"
 #include "SDL3/SDL_render.h"
 #include <cmath>
 #include <cstdint>
@@ -69,4 +70,17 @@ void draw_map_texture(SDL_Texture *texture, SDL_Renderer *renderer, SDL_FRect ds
     }
 }
 
+void zoom_map(float zoom_factor, float center_x, float center_y, AppState &state) {
+    // Compute the offset of the mouse relative to the current view's top-left corner
+    float offsetX = center_x - state.dst_map_to_display.x;
+    float offsetY = center_y - state.dst_map_to_display.y;
+
+    // Update the width and height of the view rectangle
+    state.dst_map_to_display.w *= zoom_factor;
+    state.dst_map_to_display.h *= zoom_factor;
+
+    // Update the top-left coordinates so the mouse position remains fixed in the map
+    state.dst_map_to_display.x = center_x - offsetX * zoom_factor;
+    state.dst_map_to_display.y = center_y - offsetY * zoom_factor;
+}
 
