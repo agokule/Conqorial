@@ -77,9 +77,6 @@ SDL_AppResult SDL_AppIterate(void *appstate) {
     AppState *const state = static_cast<AppState *>(appstate);
     SDL_Renderer *renderer = state->renderer;
 
-    SDL_SetRenderDrawColor(renderer, state->color.x * 255, state->color.y * 255, state->color.z * 255, state->color.w * 255);
-    SDL_RenderClear(renderer);
-
     ImGui_ImplSDL3_NewFrame();
     ImGui_ImplSDLRenderer3_NewFrame();
     ImGui::NewFrame();
@@ -89,9 +86,9 @@ SDL_AppResult SDL_AppIterate(void *appstate) {
     SDL_RenderClear(renderer);  /* start with a blank canvas. */
 
     ImGui::Begin("Hello there");
-
-    ImGui::ColorEdit4("Choose color", &state->color.x);
-
+    if (ImGui::Button("Reset view")) {
+        state->dst_map_to_display = { 0, 0, (float)state->map.get_width(), (float)state->map.get_height()};
+    }
     ImGui::End();
 
     draw_map_texture(state->map_texture, renderer, state->dst_map_to_display);
