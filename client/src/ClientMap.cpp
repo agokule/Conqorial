@@ -54,8 +54,6 @@ SDL_Texture *init_map_texture(const Map &map, SDL_Renderer *renderer) {
                 pixels[y * pitch + x * format->bytes_per_pixel + 3] = 255 - (std::pow((double)tile.elevation / 100.0, 2)) * 100;
             else
                 pixels[y * pitch + x * format->bytes_per_pixel + 3] = 255 - tile.elevation * 2.5;
-            if (x == width - 1)
-                std::cout << "Drawing map tile: " << (short)tile.elevation << "(" << (short)color.r << " " << (short)color.g << " " << (short)color.b << " " << (short)color.a << ")\n";
         }
     }
 
