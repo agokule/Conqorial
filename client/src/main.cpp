@@ -2,6 +2,7 @@
 #include "SDL3/SDL_events.h"
 #include "SDL3/SDL_render.h"
 #include <iostream>
+#include <sys/stat.h>
 #define SDL_MAIN_USE_CALLBACKS
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_main.h>
@@ -62,8 +63,26 @@ SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event) {
             auto y_rel = event->motion.yrel;
             state.dst_map_to_display.x += x_rel;
             state.dst_map_to_display.y += y_rel;
-            std::cout << "Mouse moved by (" << x_rel << ", " << y_rel << ")\n";
         }
+    } else if (event->type == SDL_EVENT_MOUSE_WHEEL) {
+        // Choose a zoom factor. For example, a wheel notch scales by 10%
+        float zoomFactor = 1.0f + event->wheel.y * 0.1f;
+
+        // Get current mouse position
+        float mouseX = event->wheel.mouse_x;
+        float mouseY = event->wheel.mouse_y;
+
+        // Compute the offset of the mouse relative to the current view's top-left corner
+        float offsetX = mouseX - state.dst_map_to_display.x;
+        float offsetY = mouseY - state.dst_map_to_display.y;
+
+        // Update the width and height of the view rectangle
+        state.dst_map_to_display.w *= zoomFactor;
+        state.dst_map_to_display.h *= zoomFactor;
+
+        // Update the top-left coordinates so the mouse position remains fixed in the map
+        state.dst_map_to_display.x = mouseX - offsetX * zoomFactor;
+        state.dst_map_to_display.y = mouseY - offsetY * zoomFactor;
     }
     return SDL_APP_CONTINUE;
 }
