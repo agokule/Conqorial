@@ -1,6 +1,7 @@
 #include "ClientMap.h"
 #include "SDL3/SDL_events.h"
 #include "SDL3/SDL_render.h"
+#include "SDL3/SDL_video.h"
 #include <iostream>
 #include <sys/stat.h>
 #define SDL_MAIN_USE_CALLBACKS
@@ -46,6 +47,7 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
     std::cout << "Initializing Map texture\n";
     state->map_texture = init_map_texture(state->map, state->renderer);
 
+    SDL_SetTextureScaleMode(state->map_texture, SDL_SCALEMODE_NEAREST);
     SDL_SetRenderDrawBlendMode(state->renderer, SDL_BLENDMODE_BLEND);
 
     return SDL_APP_CONTINUE;
