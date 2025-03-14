@@ -1,4 +1,5 @@
 #include "ClientMap.h"
+#include "GameState.h"
 #include "SDL3/SDL_events.h"
 #include "SDL3/SDL_render.h"
 #include "SDL3/SDL_video.h"
@@ -70,9 +71,65 @@ SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event) {
         // Choose a zoom factor. For example, a wheel notch scales by 10%
         float zoom_factor = 1.0f + event->wheel.y * 0.1f;
         zoom_map(zoom_factor, event->wheel.mouse_x, event->wheel.mouse_y, state);
+    } else if (event->type == SDL_EVENT_MOUSE_BUTTON_DOWN) {
+        // Convert mouse coordinates (from the event) to map tile coordinates.
+        float relX = event->button.x - state.dst_map_to_display.x;
+        float relY = event->button.y - state.dst_map_to_display.y;
+        // Scale based on how the map texture is rendered.
+        int tileX = static_cast<int>(relX * state.map.get_width() / state.dst_map_to_display.w);
+        int tileY = static_cast<int>(relY * state.map.get_height() / state.dst_map_to_display.h);
+
+        // Ensure the click is within the map bounds.
+        if (tileX < 0 || tileX >= state.map.get_width() || tileY < 0 || tileY >= state.map.get_height()) {
+            return SDL_APP_CONTINUE;
+        }
+
+        MapTile tile = state.map.get_tile(tileX, tileY);
+
+        if (state.game_state == GameState::SelectingStartingPoint) {
+            // For example, only allow non-water tiles as starting positions.
+            if (tile.type != MapTileType::Water) {
+                // Set the player's starting tile.
+                state.map.set_tile(tileX, tileY, tile.type, state.player_country_id);
+                // Re-create the texture so that the new ownership shows.
+                SDL_DestroyTexture(state.map_texture);
+                state.map_texture = init_map_texture(state.map, state.renderer);
+                SDL_SetTextureScaleMode(state.map_texture, SDL_SCALEMODE_NEAREST);
+                // Transition to the in-game state.
+                state.game_state = GameState::InGame;
+            }
+        } else if (state.game_state == GameState::InGame) {
+            // If the tile is not already owned by the player, check for an adjacent tile owned by the player.
+            if (tile.owner != state.player_country_id) {
+                std::cout << "Checking for adjacent tile owned by player " << (int)tile.owner << std::endl;
+                bool adjacent = false;
+                // Check the four cardinal neighbors.
+                int directions[4][2] = { {1,0}, {-1,0}, {0,1}, {0,-1} };
+                for (auto &dir : directions) {
+                    int nx = tileX + dir[0];
+                    int ny = tileY + dir[1];
+                    if (nx >= 0 && nx < state.map.get_width() && ny >= 0 && ny < state.map.get_height()) {
+                        MapTile neighbor = state.map.get_tile(nx, ny);
+                        if (neighbor.owner == state.player_country_id) {
+                            adjacent = true;
+                            break;
+                        }
+                    }
+                }
+                if (adjacent) {
+                    // "Attack" succeeds: assign the tile to the player.
+                    state.map.set_tile(tileX, tileY, tile.type, state.player_country_id);
+                    // Re-create the texture to update the visual ownership.
+                    SDL_DestroyTexture(state.map_texture);
+                    state.map_texture = init_map_texture(state.map, state.renderer);
+                    SDL_SetTextureScaleMode(state.map_texture, SDL_SCALEMODE_NEAREST);
+                }
+            }
+        }
     }
     return SDL_APP_CONTINUE;
 }
+
 
 /* This function runs once per frame, and is the heart of the program. */
 SDL_AppResult SDL_AppIterate(void *appstate) {

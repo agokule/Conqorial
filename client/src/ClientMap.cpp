@@ -22,6 +22,25 @@ SDL_Color get_tile_color(MapTileType type) {
     }
 }
 
+SDL_Color get_tile_display_color(const MapTile &tile) {
+    SDL_Color color = get_tile_color(tile.type);
+    // If the tile has been conquered (owner != 0), tint the color.
+    if (tile.owner != 0) {
+        if (tile.owner == 1) {  // player's territory (playerCountryId = 1)
+            // Blend with green for player-controlled territory.
+            color.r = (color.r + 0) / 2;
+            color.g = (color.g + 255) / 2;
+            color.b = (color.b + 0) / 2;
+        } else {
+            // Blend with red for enemy territory.
+            color.r = (color.r + 255) / 2;
+            color.g = (color.g + 0) / 2;
+            color.b = (color.b + 0) / 2;
+        }
+    }
+    return color;
+}
+
 SDL_Texture *init_map_texture(const Map &map, SDL_Renderer *renderer) {
     unsigned width = map.get_width(), height = map.get_height();
 
@@ -46,7 +65,7 @@ SDL_Texture *init_map_texture(const Map &map, SDL_Renderer *renderer) {
     for (unsigned y = 0; y < height; y++) {
         for (unsigned x = 0; x < width; x++) {
             MapTile tile = map.get_tile(x, y);
-            auto color = get_tile_color(tile.type);
+            auto color = get_tile_display_color(tile);
             pixels[y * pitch + x * format->bytes_per_pixel] = color.r;
             pixels[y * pitch + x * format->bytes_per_pixel + 1] = color.g;
             pixels[y * pitch + x * format->bytes_per_pixel + 2] = color.b;

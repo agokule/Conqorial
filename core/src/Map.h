@@ -3,6 +3,7 @@
 
 #include <vector>
 #include "FastNoiseLite/FastNoiseLite.h"
+#include "Country.h"
 #include "MapTile.h"
 #include "MapTileTypes.h"
 #include "typedefs.h"
@@ -16,7 +17,7 @@ class Map {
 public:
     Map(unsigned width, unsigned height);
 
-    void set_tile(unsigned x, unsigned y, MapTileType type, PlayerId owner);
+    void set_tile(unsigned x, unsigned y, MapTileType type, CountryId owner);
     MapTile get_tile(unsigned x, unsigned y) const;
 
     unsigned get_width() const { return width; }

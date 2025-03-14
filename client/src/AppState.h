@@ -1,5 +1,6 @@
 #pragma once
 #include <SDL3/SDL.h>
+#include "GameState.h"
 #include "SDL3/SDL_render.h"
 #include "imgui.h"
 #include "Map.h"
@@ -14,10 +15,14 @@ struct AppState {
 
     SDL_FRect dst_map_to_display;
 
+    // New fields for game state and player country.
+    GameState game_state = GameState::SelectingStartingPoint;
+    CountryId player_country_id = 1;  // assume 1 is the player's ID
+
     AppState(const Map &map)
         : window(nullptr), renderer(nullptr), map_texture(nullptr),
-        color({ 0, 0, 0, 255 }), map(map),
-        dst_map_to_display({ 0, 0, (float)map.get_width(), (float)map.get_height()})
-        {};
-};
+          color({ 0, 0, 0, 255 }), map(map),
+          dst_map_to_display({ 0, 0, (float)map.get_width(), (float)map.get_height()})
+          {};
+};;
 

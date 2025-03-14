@@ -37,7 +37,7 @@ Map::Map(unsigned width, unsigned height) : width(width), height(height), tiles(
     }
 }
 
-void Map::set_tile(unsigned x, unsigned y, MapTileType type, PlayerId owner) {
+void Map::set_tile(unsigned x, unsigned y, MapTileType type, CountryId owner) {
     tiles[y * width + x].type = type;
     tiles[y * width + x].owner = owner;
 }
