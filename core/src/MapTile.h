@@ -2,7 +2,7 @@
 #define MAP_TILE_H
 
 #include "MapTileTypes.h"
-#include "Country.h"
+#include "typedefs.h"
 #include <cstdint>
 
 struct MapTile {

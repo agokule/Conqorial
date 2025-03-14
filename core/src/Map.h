@@ -4,7 +4,6 @@
 #include <vector>
 #include "FastNoiseLite/FastNoiseLite.h"
 #include "MapTile.h"
-#include "MapTileTypes.h"
 #include "typedefs.h"
 
 class Map {

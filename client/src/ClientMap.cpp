@@ -38,6 +38,10 @@ SDL_Color get_tile_display_color(const MapTile &tile) {
             color.b = (color.b + 0) / 2;
         }
     }
+    if (tile.type != MapTileType::Water)
+        color.a = 255 - (std::pow((double)tile.elevation / 100.0, 2)) * 100;
+    else
+        color.a = 255 - tile.elevation * 2.5;
     return color;
 }
 
@@ -69,10 +73,7 @@ SDL_Texture *init_map_texture(const Map &map, SDL_Renderer *renderer) {
             pixels[y * pitch + x * format->bytes_per_pixel] = color.r;
             pixels[y * pitch + x * format->bytes_per_pixel + 1] = color.g;
             pixels[y * pitch + x * format->bytes_per_pixel + 2] = color.b;
-            if (tile.type != MapTileType::Water)
-                pixels[y * pitch + x * format->bytes_per_pixel + 3] = 255 - (std::pow((double)tile.elevation / 100.0, 2)) * 100;
-            else
-                pixels[y * pitch + x * format->bytes_per_pixel + 3] = 255 - tile.elevation * 2.5;
+            pixels[y * pitch + x * format->bytes_per_pixel + 3] = color.a;
         }
     }
 

@@ -4,6 +4,7 @@
 #include "SDL3/SDL_render.h"
 #include "SDL3/SDL_video.h"
 #include <iostream>
+#include <optional>
 #include <sys/stat.h>
 #define SDL_MAIN_USE_CALLBACKS
 #include <SDL3/SDL.h>
@@ -90,7 +91,7 @@ SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event) {
             // For example, only allow non-water tiles as starting positions.
             if (tile.type != MapTileType::Water) {
                 // Set the player's starting tile.
-                state.map.set_tile(tileX, tileY, tile.type, state.player_country_id);
+                state.map.set_tile(tileX, tileY, state.player_country.get_id());
                 // Re-create the texture so that the new ownership shows.
                 SDL_DestroyTexture(state.map_texture);
                 state.map_texture = init_map_texture(state.map, state.renderer);
@@ -100,29 +101,27 @@ SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event) {
             }
         } else if (state.game_state == GameState::InGame) {
             // If the tile is not already owned by the player, check for an adjacent tile owned by the player.
-            if (tile.owner != state.player_country_id) {
-                std::cout << "Checking for adjacent tile owned by player " << (int)tile.owner << std::endl;
-                bool adjacent = false;
-                // Check the four cardinal neighbors.
-                int directions[4][2] = { {1,0}, {-1,0}, {0,1}, {0,-1} };
-                for (auto &dir : directions) {
-                    int nx = tileX + dir[0];
-                    int ny = tileY + dir[1];
-                    if (nx >= 0 && nx < state.map.get_width() && ny >= 0 && ny < state.map.get_height()) {
-                        MapTile neighbor = state.map.get_tile(nx, ny);
-                        if (neighbor.owner == state.player_country_id) {
-                            adjacent = true;
-                            break;
+            if (tile.owner != state.player_country.get_id()) {
+                while (true) {
+                    auto [successful_attack, remaining_troops, tiles_to_update] = state.player_country.attack({}, {tileX, tileY}, state.map, 10000);
+                    if (remaining_troops == 0 || !successful_attack)
+                        break;
+                    if (successful_attack) {
+                        uint8_t *pixels = nullptr;
+                        int pitch = 0;
+                        auto format = SDL_GetPixelFormatDetails(state.map_texture->format);
+                        SDL_LockTexture(state.map_texture, NULL, (void**)&pixels, &pitch);
+                        for (auto [x, y] : tiles_to_update) {
+                            MapTile tile = state.map.get_tile(x, y);
+                            auto color = get_tile_display_color(tile);
+                            pixels[y * pitch + x * format->bytes_per_pixel] = color.r;
+                            pixels[y * pitch + x * format->bytes_per_pixel + 1] = color.g;
+                            pixels[y * pitch + x * format->bytes_per_pixel + 2] = color.b;
+                            pixels[y * pitch + x * format->bytes_per_pixel + 3] = color.a;
                         }
+                        SDL_UnlockTexture(state.map_texture);
+                        draw_map_texture(state.map_texture, state.renderer, state.dst_map_to_display);
                     }
-                }
-                if (adjacent) {
-                    // "Attack" succeeds: assign the tile to the player.
-                    state.map.set_tile(tileX, tileY, tile.type, state.player_country_id);
-                    // Re-create the texture to update the visual ownership.
-                    SDL_DestroyTexture(state.map_texture);
-                    state.map_texture = init_map_texture(state.map, state.renderer);
-                    SDL_SetTextureScaleMode(state.map_texture, SDL_SCALEMODE_NEAREST);
                 }
             }
         }

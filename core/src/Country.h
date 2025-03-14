@@ -1,13 +1,12 @@
 #ifndef COUNTRY_H
 #define COUNTRY_H
 
+#include "Map.h"
 #include "color.h"
-#include <cstdint>
+#include <optional>
+#include <set>
 #include <string>
-
-// CountryId is an alias for uint8_t.
-// If it is 0, it means no player/ai
-typedef uint8_t CountryId;
+#include <tuple>
 
 class Country {
     CountryId id;
@@ -18,8 +17,21 @@ class Country {
     Color color;
 
     unsigned troops = 0;
+
+    bool can_attack(CountryId other_id, std::pair<unsigned, unsigned> pos, const Map &map) const;
+
 public:
     Country(CountryId id, std::string name, bool is_human, Color color) : id {id}, name {name}, is_human {is_human}, color {color} {}
+
+    // returns true if attack was successful
+    // false if attack failed
+    std::tuple<bool, unsigned, std::set<std::pair<unsigned, unsigned>>> attack(std::optional<Country> other, std::pair<unsigned, unsigned> pos, Map &map, unsigned troops);
+
+    unsigned get_troops() const { return troops; }
+    CountryId get_id() const { return id; }
+    std::string get_name() const { return name; }
+    bool get_is_human() const { return is_human; }
+    Color get_color() const { return color; }
 };
 
 #endif
