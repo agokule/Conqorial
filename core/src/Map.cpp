@@ -37,14 +37,13 @@ Map::Map(unsigned width, unsigned height) : width(width), height(height), tiles(
     }
 }
 
-void Map::set_tile(unsigned x, unsigned y, MapTileType type, CountryId owner) {
-    tiles[y * width + x].type = type;
+void Map::set_tile(unsigned x, unsigned y, CountryId owner) {
     tiles[y * width + x].owner = owner;
 }
 
 
-void Map::set_tile(std::pair<unsigned, unsigned> pos, MapTileType type, CountryId owner) {
-    set_tile(pos.first, pos.second, type, owner);
+void Map::set_tile(std::pair<unsigned, unsigned> pos, CountryId owner) {
+    set_tile(pos.first, pos.second, owner);
 }
 
 MapTile Map::get_tile(unsigned x, unsigned y) const {

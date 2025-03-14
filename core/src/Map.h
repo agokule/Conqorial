@@ -16,8 +16,8 @@ class Map {
 public:
     Map(unsigned width, unsigned height);
 
-    void set_tile(unsigned x, unsigned y, MapTileType type, CountryId owner);
-    void set_tile(std::pair<unsigned, unsigned> pos, MapTileType type, CountryId owner);
+    void set_tile(unsigned x, unsigned y, CountryId owner);
+    void set_tile(std::pair<unsigned, unsigned> pos, CountryId owner);
     MapTile get_tile(unsigned x, unsigned y) const;
     MapTile get_tile(std::pair<unsigned, unsigned> pos) const;
 
