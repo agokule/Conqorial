@@ -4,11 +4,11 @@
 #include "Map.h"
 #include "color.h"
 #include <optional>
-#include <set>
 #include <string>
-#include <tuple>
 
 class Country {
+    friend struct Attack;
+
     CountryId id;
     std::string name;
 
@@ -17,15 +17,10 @@ class Country {
     Color color;
 
     unsigned troops = 0;
-
-    bool can_attack(CountryId other_id, std::pair<unsigned, unsigned> pos, const Map &map) const;
-
 public:
     Country(CountryId id, std::string name, bool is_human, Color color) : id {id}, name {name}, is_human {is_human}, color {color} {}
 
-    // returns true if attack was successful
-    // false if attack failed
-    std::tuple<bool, unsigned, std::set<std::pair<unsigned, unsigned>>> attack(std::optional<Country> other, std::pair<unsigned, unsigned> pos, Map &map, unsigned troops);
+    bool can_attack(CountryId other_id, std::pair<unsigned, unsigned> pos, const Map &map) const;
 
     unsigned get_troops() const { return troops; }
     CountryId get_id() const { return id; }

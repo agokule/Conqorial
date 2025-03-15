@@ -1,9 +1,12 @@
+#include "Attack.h"
 #include "ClientMap.h"
 #include "GameState.h"
 #include "SDL3/SDL_events.h"
 #include "SDL3/SDL_render.h"
 #include "SDL3/SDL_video.h"
+#include "typedefs.h"
 #include <iostream>
+#include <memory>
 #include <optional>
 #include <sys/stat.h>
 #define SDL_MAIN_USE_CALLBACKS
@@ -102,11 +105,20 @@ SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event) {
         } else if (state.game_state == GameState::InGame) {
             // If the tile is not already owned by the player, check for an adjacent tile owned by the player.
             if (tile.owner != state.player_country.get_id()) {
-                while (true) {
-                    auto [successful_attack, remaining_troops, tiles_to_update] = state.player_country.attack({}, {tileX, tileY}, state.map, 10000);
-                    if (remaining_troops == 0 || !successful_attack)
-                        break;
-                    if (successful_attack) {
+                unsigned troops_to_attack = 10000;
+                bool able_to_attack = state.player_country.can_attack(tile.owner, {tileX, tileY}, state.map);
+
+                std::cout << "Can attack: " << able_to_attack << std::endl;
+                if (!able_to_attack)
+                    return SDL_APP_CONTINUE;
+
+                std::optional<Country> defender {};
+                auto attack = new Attack(state.player_country, defender, std::make_pair(tileX, tileY), troops_to_attack);
+                auto callback = [attack, &state]() {
+                    std::cout << "Updating attack...\n";
+                    auto tiles_to_update = attack->advance(state.map);
+                    if (!tiles_to_update.empty()) {
+                        std::cout << "Updating " << tiles_to_update.size() << " tiles\n";
                         uint8_t *pixels = nullptr;
                         int pitch = 0;
                         auto format = SDL_GetPixelFormatDetails(state.map_texture->format);
@@ -120,9 +132,13 @@ SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event) {
                             pixels[y * pitch + x * format->bytes_per_pixel + 3] = color.a;
                         }
                         SDL_UnlockTexture(state.map_texture);
-                        draw_map_texture(state.map_texture, state.renderer, state.dst_map_to_display);
                     }
-                }
+                    std::cout << "Attack result: " << !tiles_to_update.empty() << std::endl;
+                    if (tiles_to_update.empty())
+                        delete attack;
+                    return !tiles_to_update.empty();
+                };
+                state.callback_functions.emplace_back(callback);
             }
         }
     }
@@ -134,6 +150,16 @@ SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event) {
 SDL_AppResult SDL_AppIterate(void *appstate) {
     AppState &state = *static_cast<AppState *>(appstate);
     SDL_Renderer *renderer = state.renderer;
+
+    // run callbacks.
+    for (auto it = state.callback_functions.begin(); it != state.callback_functions.end(); it++) {
+        std::cout << "Running callback...\n";
+        std::cout << (it == state.callback_functions.end()) << std::endl;
+        if (!it->operator()()) {
+            it = state.callback_functions.erase(it);
+            it--;
+        }
+    }
 
     ImGui_ImplSDL3_NewFrame();
     ImGui_ImplSDLRenderer3_NewFrame();

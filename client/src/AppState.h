@@ -1,5 +1,7 @@
 #pragma once
 #include <SDL3/SDL.h>
+#include <functional>
+#include <vector>
 #include "GameState.h"
 #include "Country.h"
 #include "SDL3/SDL_render.h"
@@ -19,6 +21,8 @@ struct AppState {
     // New fields for game state and player country.
     GameState game_state = GameState::SelectingStartingPoint;
     Country player_country;
+
+    std::vector<std::function<bool()>> callback_functions;
 
     AppState(const Map &map)
         : window(nullptr), renderer(nullptr), map_texture(nullptr),
