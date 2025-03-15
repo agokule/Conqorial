@@ -3,6 +3,7 @@
 #include "SDL3/SDL_pixels.h"
 #include "SDL3/SDL_rect.h"
 #include "SDL3/SDL_render.h"
+#include "typedefs.h"
 #include <cmath>
 #include <cstdint>
 #include <iostream>
@@ -22,21 +23,13 @@ SDL_Color get_tile_color(MapTileType type) {
     }
 }
 
-SDL_Color get_tile_display_color(const MapTile &tile) {
+SDL_Color get_tile_display_color(const MapTile &tile, const std::map<CountryId, Country> &countries) {
     SDL_Color color = get_tile_color(tile.type);
     // If the tile has been conquered (owner != 0), tint the color.
     if (tile.owner != 0) {
-        if (tile.owner == 1) {  // player's territory (playerCountryId = 1)
-            // Blend with green for player-controlled territory.
-            color.r = (color.r + 0) / 2;
-            color.g = (color.g + 255) / 2;
-            color.b = (color.b + 0) / 2;
-        } else {
-            // Blend with red for enemy territory.
-            color.r = (color.r + 255) / 2;
-            color.g = (color.g + 0) / 2;
-            color.b = (color.b + 0) / 2;
-        }
+        color.r = (color.r + countries.at(tile.owner).get_color().r) / 2;
+        color.g = (color.g + countries.at(tile.owner).get_color().g) / 2;
+        color.b = (color.b + countries.at(tile.owner).get_color().b) / 2;
     }
     if (tile.type != MapTileType::Water)
         color.a = 255 - (std::pow((double)tile.elevation / 100.0, 2)) * 100;
@@ -45,7 +38,7 @@ SDL_Color get_tile_display_color(const MapTile &tile) {
     return color;
 }
 
-SDL_Texture *init_map_texture(const Map &map, SDL_Renderer *renderer) {
+SDL_Texture *init_map_texture(const Map &map, SDL_Renderer *renderer, const std::map<CountryId, Country> &countries) {
     unsigned width = map.get_width(), height = map.get_height();
 
     SDL_Texture *texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_STREAMING, width, height);
@@ -69,7 +62,7 @@ SDL_Texture *init_map_texture(const Map &map, SDL_Renderer *renderer) {
     for (unsigned y = 0; y < height; y++) {
         for (unsigned x = 0; x < width; x++) {
             MapTile tile = map.get_tile(x, y);
-            auto color = get_tile_display_color(tile);
+            auto color = get_tile_display_color(tile, countries);
             pixels[y * pitch + x * format->bytes_per_pixel] = color.r;
             pixels[y * pitch + x * format->bytes_per_pixel + 1] = color.g;
             pixels[y * pitch + x * format->bytes_per_pixel + 2] = color.b;

@@ -50,7 +50,7 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
     io.IniFilename = nullptr;
 
     std::cout << "Initializing Map texture\n";
-    state->map_texture = init_map_texture(state->map, state->renderer);
+    state->map_texture = init_map_texture(state->map, state->renderer, state->countries);
 
     SDL_SetTextureScaleMode(state->map_texture, SDL_SCALEMODE_NEAREST);
     SDL_SetRenderDrawBlendMode(state->renderer, SDL_BLENDMODE_BLEND);
@@ -97,7 +97,7 @@ SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event) {
                 state.map.set_tile(tileX, tileY, state.player_country.get_id());
                 // Re-create the texture so that the new ownership shows.
                 SDL_DestroyTexture(state.map_texture);
-                state.map_texture = init_map_texture(state.map, state.renderer);
+                state.map_texture = init_map_texture(state.map, state.renderer, state.countries);
                 SDL_SetTextureScaleMode(state.map_texture, SDL_SCALEMODE_NEAREST);
                 // Transition to the in-game state.
                 state.game_state = GameState::InGame;
@@ -113,10 +113,12 @@ SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event) {
                     return SDL_APP_CONTINUE;
 
                 std::optional<Country> defender {};
+                if (tile.owner != 0)
+                    defender = state.countries.at(tile.owner);
                 auto attack = new Attack(state.player_country, defender, std::make_pair(tileX, tileY), troops_to_attack);
                 auto callback = [attack, &state]() {
                     std::cout << "Updating attack...\n";
-                    auto tiles_to_update = attack->advance(state.map);
+                    auto tiles_to_update = attack->advance(state.map, state.countries);
                     if (!tiles_to_update.empty()) {
                         std::cout << "Updating " << tiles_to_update.size() << " tiles\n";
                         uint8_t *pixels = nullptr;
@@ -125,7 +127,7 @@ SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event) {
                         SDL_LockTexture(state.map_texture, NULL, (void**)&pixels, &pitch);
                         for (auto [x, y] : tiles_to_update) {
                             MapTile tile = state.map.get_tile(x, y);
-                            auto color = get_tile_display_color(tile);
+                            auto color = get_tile_display_color(tile, state.countries);
                             pixels[y * pitch + x * format->bytes_per_pixel] = color.r;
                             pixels[y * pitch + x * format->bytes_per_pixel + 1] = color.g;
                             pixels[y * pitch + x * format->bytes_per_pixel + 2] = color.b;

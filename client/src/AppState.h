@@ -1,6 +1,7 @@
 #pragma once
 #include <SDL3/SDL.h>
 #include <functional>
+#include <map>
 #include <vector>
 #include "GameState.h"
 #include "Country.h"
@@ -23,12 +24,17 @@ struct AppState {
     Country player_country;
 
     std::vector<std::function<bool()>> callback_functions;
+    std::map<CountryId, Country> countries;
 
     AppState(const Map &map)
         : window(nullptr), renderer(nullptr), map_texture(nullptr),
           color({ 0, 0, 0, 255 }), map(map),
           dst_map_to_display({ 0, 0, (float)map.get_width(), (float)map.get_height()}),
-          player_country { 1, "Player", true, {0, 0, 0, 0} }
-          {};
+          player_country { 1, "Player", true, {0, 0, 0, 0} },
+          countries {}
+          {
+        countries[0] = { 0, "Neutral", false, {0, 0, 0, 0} };
+        countries[1] = player_country;
+    };
 };;
 
