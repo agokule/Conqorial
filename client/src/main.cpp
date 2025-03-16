@@ -115,7 +115,8 @@ SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event) {
                 std::optional<Country> defender {};
                 if (tile.owner != 0)
                     defender = state.countries.at(tile.owner);
-                auto attack = new Attack(state.player_country, defender, std::make_pair(tileX, tileY), troops_to_attack);
+                state.on_going_attacks[state.player_country.get_id()].emplace_back(state.player_country, defender, std::make_pair(tileX, tileY), troops_to_attack);
+                auto attack = std::prev(state.on_going_attacks[state.player_country.get_id()].end());
                 auto callback = [attack, &state]() {
                     std::cout << "Updating attack...\n";
                     auto tiles_to_update = attack->advance(state.map, state.countries);
@@ -137,7 +138,7 @@ SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event) {
                     }
                     std::cout << "Attack result: " << !tiles_to_update.empty() << std::endl;
                     if (tiles_to_update.empty())
-                        delete attack;
+                        state.on_going_attacks[state.player_country.get_id()].erase(attack);
                     return !tiles_to_update.empty();
                 };
                 state.callback_functions.emplace_back(callback);
