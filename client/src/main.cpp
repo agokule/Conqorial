@@ -121,7 +121,7 @@ SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event) {
                         return SDL_APP_CONTINUE;
                     }
                 }
-                state.on_going_attacks[state.player_country.get_id()].emplace_back(state.player_country, defender, std::make_pair(tileX, tileY), troops_to_attack);
+                state.on_going_attacks[state.player_country.get_id()].emplace_back(state.player_country, defender, troops_to_attack);
                 auto attack = std::prev(state.on_going_attacks[state.player_country.get_id()].end());
                 auto callback = [attack, &state]() {
                     std::cout << "Updating attack...\n";

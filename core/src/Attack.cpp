@@ -27,21 +27,41 @@ std::set<std::pair<unsigned, unsigned>> Attack::advance(Map &map, std::map<Count
     // get border between this and other
     std::set<std::pair<unsigned, unsigned>> border;
     int directions[4][2] = { {1,0}, {-1,0}, {0,1}, {0,-1} };
-    for (unsigned y = 0; y < map.get_height(); y++) {
-        for (unsigned x = 0; x < map.get_width(); x++) {
-            if (map.get_tile(x, y).owner == defender->id && map.get_tile(x, y).type != MapTileType::Water) {
-                for (auto &dir : directions) {
-                    int nx = x + dir[0];
-                    int ny = y + dir[1];
-                    if (nx >= 0 && nx < (int)map.get_width() && ny >= 0 && ny < (int)map.get_height()) {
-                        MapTile neighbor = map.get_tile(nx, ny);
-                        if (neighbor.owner == attacker.get_id() && neighbor.type != MapTileType::Water) {
-                            border.insert({x, y});
+
+    if (this->current_boder.empty()) {
+        // no cached border, do a full check over the entire map
+        for (unsigned y = 0; y < map.get_height(); y++) {
+            for (unsigned x = 0; x < map.get_width(); x++) {
+                if (map.get_tile(x, y).owner == defender->id && map.get_tile(x, y).type != MapTileType::Water) {
+                    for (auto &dir : directions) {
+                        int nx = x + dir[0];
+                        int ny = y + dir[1];
+                        if (nx >= 0 && nx < (int)map.get_width() && ny >= 0 && ny < (int)map.get_height()) {
+                            MapTile neighbor = map.get_tile(nx, ny);
+                            if (neighbor.owner == attacker.get_id() && neighbor.type != MapTileType::Water) {
+                                border.insert({x, y});
+                            }
                         }
                     }
                 }
             }
         }
+    } else {
+        // just check the cached border
+        for (auto [x, y] : this->current_boder) {
+            for (auto &dir : directions) {
+                int nx = x + dir[0];
+                int ny = y + dir[1];
+                if (nx >= 0 && nx < (int)map.get_width() && ny >= 0 && ny < (int)map.get_height()) {
+                    MapTile neighbor = map.get_tile(nx, ny);
+                    if (neighbor.owner == defender->id && neighbor.type != MapTileType::Water) {
+                        border.insert({nx, ny});
+                    }
+                }
+            }
+        }
+        std::cout << "Border size: " << border.size() << std::endl;
+        std::cout << "Cached border size: " << this->current_boder.size() << std::endl;
     }
 
     if (border.empty()) {
@@ -59,6 +79,7 @@ std::set<std::pair<unsigned, unsigned>> Attack::advance(Map &map, std::map<Count
         attacker.troops -= troop_cost_per_pixel;
         this->troops_to_attack -= troop_cost_per_pixel;
     }
+    this->current_boder = std::vector(border.begin(), border.end());
     return border;
 }
 
