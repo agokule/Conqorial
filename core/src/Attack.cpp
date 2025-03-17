@@ -1,11 +1,11 @@
 #include "Attack.h"
-#include <iostream>
+#include "Logging.h"
 #include <optional>
 
 std::set<std::pair<unsigned, unsigned>> Attack::advance(Map &map, std::map<CountryId, Country> &countries) {
     double troop_cost_per_pixel = 1.0;
 
-    std::cout << "Defender: " << (this->defender != 0 ? "true" : "false") << std::endl;
+    LOG_DEBUG << "Defender: " << (this->defender != 0 ? "true" : "false") << '\n';
 
     std::optional<Country> defender {};
     if (this->defender != 0)
@@ -17,12 +17,12 @@ std::set<std::pair<unsigned, unsigned>> Attack::advance(Map &map, std::map<Count
         troop_cost_per_pixel += (double)defender->troops / attacker.troops - 1;
     }
 
-    std::cout << "Troop cost per pixel: " << troop_cost_per_pixel << std::endl;
-    std::cout << "Troops to attack: " << this->troops_to_attack << std::endl;
+    LOG_DEBUG << "Troop cost per pixel: " << troop_cost_per_pixel << '\n';
+    LOG_DEBUG << "Troops to attack: " << this->troops_to_attack << '\n';
 
     unsigned pixels_to_capture {static_cast<unsigned int>(this->troops_to_attack / troop_cost_per_pixel)};
 
-    std::cout << "Getting border, pixels to capture: " << pixels_to_capture << "\n";
+    LOG_DEBUG << "Getting border, pixels to capture: " << pixels_to_capture << "\n";
 
     // get border between this and other
     std::set<std::pair<unsigned, unsigned>> border;
@@ -60,17 +60,14 @@ std::set<std::pair<unsigned, unsigned>> Attack::advance(Map &map, std::map<Count
                 }
             }
         }
-        std::cout << "Border size: " << border.size() << std::endl;
-        std::cout << "Cached border size: " << this->current_boder.size() << std::endl;
+        LOG_DEBUG << "Border size: " << border.size() << '\n';
+        LOG_DEBUG << "Cached border size: " << this->current_boder.size() << '\n';
     }
 
-    if (border.empty()) {
-        std::cerr << "I thought there was a border but it is empty???" << std::endl;
-        return {};
-    }
+    CONQORIAL_ASSERT_ALL(!border.empty(), "I thought there was a border but it is empty???", return {};);
 
     if (border.size() > pixels_to_capture) {
-        std::cerr << "Not enough troops" << std::endl;
+        LOG_RELEASE_ERROR << "Not enough troops" << '\n';
         return {};
     }
 

@@ -1,15 +1,12 @@
 #include "Country.h"
-#include "Attack.h"
 #include "MapTile.h"
-#include <iostream>
-#include <optional>
-#include <set>
+#include "Logging.h"
 
 bool Country::can_attack(CountryId other_id, std::pair<unsigned, unsigned> pos, const Map &map) const {
     if (!(other_id != this->id && map.get_tile(pos.first, pos.second).type != MapTileType::Water))
         return false;
     if (map.get_tile(pos.first, pos.second).owner != other_id) {
-        std::cerr << "Huh what? The other id does not equal the tile owner" << std::endl;
+        LOG_RELEASE_ERROR << "Huh what? The other id does not equal the tile owner" << '\n';
         return false;
     }
 

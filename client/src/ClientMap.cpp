@@ -1,4 +1,5 @@
 #include "ClientMap.h"
+#include "Logging.h"
 #include "MapTileTypes.h"
 #include "SDL3/SDL_pixels.h"
 #include "SDL3/SDL_rect.h"
@@ -6,7 +7,6 @@
 #include "typedefs.h"
 #include <cmath>
 #include <cstdint>
-#include <iostream>
 
 SDL_Color get_tile_color(MapTileType type) {
     switch (type) {
@@ -42,22 +42,23 @@ SDL_Texture *init_map_texture(const Map &map, SDL_Renderer *renderer, const std:
     unsigned width = map.get_width(), height = map.get_height();
 
     SDL_Texture *texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_STREAMING, width, height);
-    if (!texture) {
-        std::cerr << "Failed to create texture: " << SDL_GetError() << std::endl;
+
+    CONQORIAL_ASSERT_ALL(texture, SDL_GetError());
+    if (!texture)
         return nullptr;
-    }
 
     int pitch = 0;
     auto format = SDL_GetPixelFormatDetails(texture->format);
     uint8_t *pixels = nullptr;
-    if (!SDL_LockTexture(texture, NULL, (void**)&pixels, &pitch)) {
-        std::cerr << "Failed to lock texture: " << SDL_GetError() << std::endl;
+
+    bool locked = SDL_LockTexture(texture, NULL, (void**)&pixels, &pitch);
+    CONQORIAL_ASSERT_ALL(locked, SDL_GetError());
+    if (!locked)
         return nullptr;
-    }
 
     auto size = width * height * format->bytes_per_pixel;
-    std::cout << "Allocating " << size << " bytes for map texture\n";
-    std::cout << "Height is " << height << " and width is " << width << " and pitch is " << pitch << " and bytes per pixel is " << (short)format->bytes_per_pixel << std::endl;
+    LOG_DEBUG << "Allocating " << size << " bytes for map texture\n";
+    LOG_DEBUG << "Height is " << height << " and width is " << width << " and pitch is " << pitch << " and bytes per pixel is " << (short)format->bytes_per_pixel << '\n';
 
     for (unsigned y = 0; y < height; y++) {
         for (unsigned x = 0; x < width; x++) {
@@ -76,9 +77,7 @@ SDL_Texture *init_map_texture(const Map &map, SDL_Renderer *renderer, const std:
 }
 
 void draw_map_texture(SDL_Texture *texture, SDL_Renderer *renderer, SDL_FRect dst_rect) {
-    if (!SDL_RenderTexture(renderer, texture, NULL, &dst_rect)) {
-        std::cerr << "Failed to render texture: " << SDL_GetError() << std::endl;
-    }
+    CONQORIAL_ASSERT_ALL(SDL_RenderTexture(renderer, texture, NULL, &dst_rect), SDL_GetError());
 }
 
 void zoom_map(float zoom_factor, float center_x, float center_y, AppState &state) {
