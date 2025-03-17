@@ -119,20 +119,37 @@ extern release_error rerr;
 #define LOG_RELEASE log::rout.set_location(__FILE__, __LINE__); log::rout
 #define LOG_RELEASE_ERROR log::rerr.set_location(__FILE__, __LINE__); log::rerr
 
-// The rest of your assert macros
-#define CONQORIAL_ASSERT_ALL(x, msg) { if (!(x)) { std::cerr << "Assertion on " << get_short_path(__FILE__) << ':' << __LINE__ << " failed: " << #x << ' ' << (msg) << '\n'; } }
+// Base assert implementation with optional code to execute on failure
+#define CONQORIAL_ASSERT_ALL(x, msg, ...) { \
+    if (!(x)) { \
+        std::cerr << "Assertion on " << get_short_path(__FILE__) << ':' << __LINE__ << " failed: " << #x << ' ' << (msg) << '\n'; \
+        __VA_ARGS__ \
+    } \
+}
 
+// Helper macro to handle the case of no extra code
+#define CONQORIAL_ASSERT_ALL_CHOOSER(_1, _2, _3, CHOSEN, ...) CHOSEN
+
+// Debug assert macros with optional code execution
 #ifdef NDEBUG
-#define CONQORIAL_DEBUG_ASSERT(x, msg)
+#define CONQORIAL_DEBUG_ASSERT_2(x, msg)
+#define CONQORIAL_DEBUG_ASSERT_3(x, msg, code)
+#define CONQORIAL_DEBUG_ASSERT(...) CONQORIAL_ASSERT_ALL_CHOOSER(__VA_ARGS__, CONQORIAL_DEBUG_ASSERT_3, CONQORIAL_DEBUG_ASSERT_2)(__VA_ARGS__)
 #else
-#define CONQORIAL_DEBUG_ASSERT(x, msg) CONQORIAL_ASSERT_ALL(x, ("(debug-only assert)\n" + (msg)))
+#define CONQORIAL_DEBUG_ASSERT_2(x, msg) CONQORIAL_ASSERT_ALL(x, ("(debug-only assert)\n" + (msg)), )
+#define CONQORIAL_DEBUG_ASSERT_3(x, msg, code) CONQORIAL_ASSERT_ALL(x, ("(debug-only assert)\n" + (msg)), code)
+#define CONQORIAL_DEBUG_ASSERT(...) CONQORIAL_ASSERT_ALL_CHOOSER(__VA_ARGS__, CONQORIAL_DEBUG_ASSERT_3, CONQORIAL_DEBUG_ASSERT_2)(__VA_ARGS__)
 #endif
 
-// New assert for release mode (works in both debug and release, but not distribution)
+// Release assert macros with optional code execution
 #ifdef DISTRIBUTION
-#define CONQORIAL_RELEASE_ASSERT(x, msg)
+#define CONQORIAL_RELEASE_ASSERT_2(x, msg)
+#define CONQORIAL_RELEASE_ASSERT_3(x, msg, code)
+#define CONQORIAL_RELEASE_ASSERT(...) CONQORIAL_ASSERT_ALL_CHOOSER(__VA_ARGS__, CONQORIAL_RELEASE_ASSERT_3, CONQORIAL_RELEASE_ASSERT_2)(__VA_ARGS__)
 #else
-#define CONQORIAL_RELEASE_ASSERT(x, msg) CONQORIAL_ASSERT_ALL(x, ("(release/debug assert)\n" + (msg)))
+#define CONQORIAL_RELEASE_ASSERT_2(x, msg) CONQORIAL_ASSERT_ALL(x, ("(release assert)\n" + (msg)), )
+#define CONQORIAL_RELEASE_ASSERT_3(x, msg, code) CONQORIAL_ASSERT_ALL(x, ("(release assert)\n" + (msg)), code)
+#define CONQORIAL_RELEASE_ASSERT(...) CONQORIAL_ASSERT_ALL_CHOOSER(__VA_ARGS__, CONQORIAL_RELEASE_ASSERT_3, CONQORIAL_RELEASE_ASSERT_2)(__VA_ARGS__)
 #endif
 
 #endif // LOGGING_H
