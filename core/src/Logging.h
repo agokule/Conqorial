@@ -15,17 +15,6 @@
 // Helper function to extract the short path
 // (ie: "c:/coding/conqorial/client/src/file.cpp" -> "client/src/file.cpp")
 constexpr std::string_view get_short_path(const char* path) {
-#ifdef NDEBUG
-    // In release/distribution mode, just extract the filename
-    const char* lastSlash = path;
-    for (const char* p = path; *p; ++p) {
-        if (*p == '/' || *p == '\\') {
-            lastSlash = p + 1;
-        }
-    }
-    return std::string_view(lastSlash);
-#else
-    // In debug mode, try to extract the last 2 directories + filename
     const char* end = path + std::char_traits<char>::length(path);
     
     // Find the last slash
@@ -46,7 +35,6 @@ constexpr std::string_view get_short_path(const char* path) {
     const char* startPoint = (thirdLastSlash > path) ? thirdLastSlash : path;
     
     return std::string_view(startPoint);
-#endif
 }
 
 namespace log {
