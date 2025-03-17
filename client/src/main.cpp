@@ -12,6 +12,7 @@
 #define SDL_MAIN_USE_CALLBACKS
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_main.h>
+#include "Logging.h"
 
 #include "imgui.h"
 #include "imgui_impl_sdl3.h"
@@ -23,7 +24,7 @@
 
 /* This function runs once at startup. */
 SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
-    std::cout << "Hello World!\n";
+    LOG_DEBUG << "Hello World!\n";
     AppState *state = new AppState({ 600, 600 });
     *appstate = state;
 
