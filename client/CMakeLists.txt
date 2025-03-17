@@ -5,6 +5,9 @@ project(Conqorial-Client)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+# Add option for distribution mode (should match the one in core)
+option(DISTRIBUTION_MODE "Enable distribution mode" OFF)
+
 # set the output directory for built objects.
 # This makes sure that the dynamic library goes into the build directory automatically.
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/$<CONFIGURATION>")
@@ -33,6 +36,11 @@ target_include_directories(Conqorial-Client PRIVATE
   dependencies/imgui/misc/cpp
 )
 
+# Configure the preprocessor definitions based on build type
+if(DISTRIBUTION_MODE)
+    target_compile_definitions(Conqorial-Client PUBLIC DISTRIBUTION)
+endif()
+
 # on Web targets, we need CMake to generate a HTML webpage. 
 if(EMSCRIPTEN)
   set(CMAKE_EXECUTABLE_SUFFIX ".html" CACHE INTERNAL "")
@@ -40,11 +48,8 @@ if(EMSCRIPTEN)
   set_target_properties(Conqorial-Client PROPERTIES LINK_FLAGS "${EMMAKE_CXX_CFLAGS}")
 endif()
 
-target_link_libraries(Conqorial-Client SDL3::SDL3)
-
 target_link_libraries(Conqorial-Client 
   SDL3::SDL3
   Conqorial-Core
 )
-
 
