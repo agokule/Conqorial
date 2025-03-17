@@ -72,7 +72,7 @@ public:
         ss << message;
 
         if (!ss.str().empty() && ss.str().back() == '\n') {
-            output_stream << filename << ":" << line_number << " - " << ss.str();
+            output_stream << filename << ":" << line_number << "  \t- " << ss.str();
             ss.str("");
             // Reset location info
             filename.clear();
