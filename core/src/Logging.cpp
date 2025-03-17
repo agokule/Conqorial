@@ -1,7 +1,7 @@
 #include "Logging.h"
 
 // Define the global logger instances - use fully qualified names
-log::debug log::dout;
-log::debug_error log::derr;
-log::release_log log::rout;
-log::release_error log::rerr;
+conqorial_log::debug conqorial_log::dout;
+conqorial_log::debug_error conqorial_log::derr;
+conqorial_log::release_log conqorial_log::rout;
+conqorial_log::release_error conqorial_log::rerr;

@@ -37,7 +37,7 @@ constexpr std::string_view get_short_path(const char* path) {
     return std::string_view(startPoint);
 }
 
-namespace log {
+namespace conqorial_log {
 
 // Base logger class with configurable compile-time enablement
 template<typename StreamType, bool EnableInRelease>
@@ -111,13 +111,13 @@ extern debug_error derr;
 extern release_log rout;
 extern release_error rerr;
 
-} // namespace log
+} // namespace conqorial_log
 
 // Macros to capture file and line info
-#define LOG_DEBUG log::dout.set_location(__FILE__, __LINE__); log::dout
-#define LOG_ERROR log::derr.set_location(__FILE__, __LINE__); log::derr
-#define LOG_RELEASE log::rout.set_location(__FILE__, __LINE__); log::rout
-#define LOG_RELEASE_ERROR log::rerr.set_location(__FILE__, __LINE__); log::rerr
+#define LOG_DEBUG conqorial_log::dout.set_location(__FILE__, __LINE__); conqorial_log::dout
+#define LOG_ERROR conqorial_log::derr.set_location(__FILE__, __LINE__); conqorial_log::derr
+#define LOG_RELEASE conqorial_log::rout.set_location(__FILE__, __LINE__); conqorial_log::rout
+#define LOG_RELEASE_ERROR conqorial_log::rerr.set_location(__FILE__, __LINE__); conqorial_log::rerr
 
 // Base assert implementation with optional code to execute on failure
 #define CONQORIAL_ASSERT_ALL(x, msg, ...) { \
