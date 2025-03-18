@@ -6,6 +6,7 @@
 #include "SDL3/SDL_video.h"
 #include <optional>
 #include <sys/stat.h>
+#include <utility>
 #define SDL_MAIN_USE_CALLBACKS
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_main.h>
@@ -115,7 +116,11 @@ SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event) {
                     defender = state.countries.at(tile.owner);
 
                 auto &ongoing_attacks_for_player = state.on_going_attacks[state.player_country.get_id()];
-                auto attack_info = ongoing_attacks_for_player.emplace(defender->get_id(), Attack(state.player_country, defender, troops_to_attack));
+                auto attack_info = ongoing_attacks_for_player.emplace(
+                    std::piecewise_construct,
+                    std::forward_as_tuple(tile.owner),
+                    std::forward_as_tuple(state.player_country, defender, troops_to_attack)
+                );
 
                 // If the player is already attacking the defender, simply add troops to the attack.
                 if (!attack_info.second) {
