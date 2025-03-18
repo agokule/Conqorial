@@ -1,7 +1,6 @@
 #pragma once
 #include <SDL3/SDL.h>
 #include <functional>
-#include <list>
 #include <map>
 #include <vector>
 #include "Attack.h"
@@ -28,7 +27,9 @@ struct AppState {
 
     std::vector<std::function<bool()>> callback_functions;
     std::map<CountryId, Country> countries;
-    std::map<CountryId, std::list<Attack>> on_going_attacks;
+
+    // on_going_attacks[attacker-][defender-id]
+    std::map<CountryId, std::map<CountryId, Attack>> on_going_attacks;
 
     AppState(const Map &map)
         : window(nullptr), renderer(nullptr), map_texture(nullptr),
@@ -41,5 +42,5 @@ struct AppState {
         countries[0] = { 0, "Neutral", false, {0, 0, 0, 0} };
         countries[1] = player_country;
     };
-};;
+};
 

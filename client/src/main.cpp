@@ -113,17 +113,20 @@ SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event) {
                 std::optional<Country> defender {};
                 if (tile.owner != 0)
                     defender = state.countries.at(tile.owner);
-                for (auto &attack : state.on_going_attacks[state.player_country.get_id()]) {
-                    if (attack.defender == (defender ? defender->get_id() : 0)) {
-                        attack.troops_to_attack += troops_to_attack;
-                        return SDL_APP_CONTINUE;
-                    }
+
+                auto &ongoing_attacks_for_player = state.on_going_attacks[state.player_country.get_id()];
+                auto attack_info = ongoing_attacks_for_player.emplace(defender->get_id(), Attack(state.player_country, defender, troops_to_attack));
+
+                // If the player is already attacking the defender, simply add troops to the attack.
+                if (!attack_info.second) {
+                    attack_info.first->second.troops_to_attack += troops_to_attack;
+                    return SDL_APP_CONTINUE;
                 }
-                state.on_going_attacks[state.player_country.get_id()].emplace_back(state.player_country, defender, troops_to_attack);
-                auto attack = std::prev(state.on_going_attacks[state.player_country.get_id()].end());
+                auto &attack = attack_info.first;
+
                 auto callback = [attack, &state]() {
                     LOG_DEBUG << "Updating attack...\n";
-                    auto tiles_to_update = attack->advance(state.map, state.countries);
+                    auto tiles_to_update = attack->second.advance(state.map, state.countries);
                     if (!tiles_to_update.empty()) {
                         LOG_DEBUG << "Updating " << tiles_to_update.size() << " tiles\n";
                         uint8_t *pixels = nullptr;
