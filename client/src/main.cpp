@@ -116,17 +116,19 @@ SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event) {
                     defender = state.countries.at(tile.owner);
 
                 auto &ongoing_attacks_for_player = state.on_going_attacks[state.player_country.get_id()];
+                bool attack_exists = ongoing_attacks_for_player.find(tile.owner) != ongoing_attacks_for_player.end();
+
+                // If the player is already attacking the defender, simply add troops to the attack.
+                if (attack_exists) {
+                    ongoing_attacks_for_player.at(tile.owner).troops_to_attack += troops_to_attack;
+                    return SDL_APP_CONTINUE;
+                }
+
                 auto attack_info = ongoing_attacks_for_player.emplace(
                     std::piecewise_construct,
                     std::forward_as_tuple(tile.owner),
                     std::forward_as_tuple(state.player_country.get_id(), tile.owner, troops_to_attack)
                 );
-
-                // If the player is already attacking the defender, simply add troops to the attack.
-                if (!attack_info.second) {
-                    attack_info.first->second.troops_to_attack += troops_to_attack;
-                    return SDL_APP_CONTINUE;
-                }
                 auto &attack = attack_info.first;
 
                 auto callback = [attack, &state]() {
