@@ -40,7 +40,7 @@ constexpr std::string_view get_short_path(const char* path) {
 namespace conqorial_log {
 
 // Base logger class with configurable compile-time enablement
-template<typename StreamType, bool EnableInRelease>
+template<typename StreamType, bool EnableInRelease, bool EnableInDistribution>
 class logger_base {
 protected:
     std::stringstream ss;
@@ -52,15 +52,22 @@ public:
     logger_base(StreamType& stream) : line_number(0), output_stream(stream) {}
     
     void set_location(const std::string& file, int line) {
+#ifdef DISTRIBUTION
+        if constexpr (!EnableInDistribution)
+            return;
+#elif defined(NDEBUG)
+        if constexpr (!EnableInRelease)
+            return;
+#endif
         filename = get_short_path(file.c_str());
         line_number = line;
     }
     
     template<typename T>
-    inline logger_base<StreamType, EnableInRelease> &operator<<(const T &message) {
+    inline logger_base<StreamType, EnableInRelease, EnableInDistribution> &operator<<(const T &message) {
 #ifdef DISTRIBUTION
-        // In distribution mode, all logging is disabled
-        return *this;
+        if constexpr (!EnableInDistribution)
+            return *this;
 #else
 #ifdef NDEBUG
         // In release mode, only enabled if EnableInRelease is true
@@ -84,25 +91,37 @@ public:
 };
 
 // Debug-only loggers (disabled in release and distribution modes)
-class debug : public logger_base<std::ostream, false> {
+class debug : public logger_base<std::ostream, false, false> {
 public:
     debug() : logger_base(std::cout) {}
 };
 
-class debug_error : public logger_base<std::ostream, false> {
+class debug_error : public logger_base<std::ostream, false, false> {
 public:
     debug_error() : logger_base(std::cerr) {}
 };
 
 // Release loggers (enabled in debug and release modes, disabled in distribution mode)
-class release_log : public logger_base<std::ostream, true> {
+class release_log : public logger_base<std::ostream, true, false> {
 public:
     release_log() : logger_base(std::cout) {}
 };
 
-class release_error : public logger_base<std::ostream, true> {
+class release_error : public logger_base<std::ostream, true, false> {
 public:
     release_error() : logger_base(std::cerr) {}
+};
+
+
+// Distribution loggers (enabled in debug, release, and distribution modes)
+class distribution_log : public logger_base<std::ostream, true, true> {
+public:
+    distribution_log() : logger_base(std::cout) {}
+};
+
+class distribution_error : public logger_base<std::ostream, true, true> {
+public:
+    distribution_error() : logger_base(std::cerr) {}
 };
 
 // External instances
@@ -110,6 +129,8 @@ extern debug dout;
 extern debug_error derr;
 extern release_log rout;
 extern release_error rerr;
+extern distribution_log diout;
+extern distribution_error dierr;
 
 } // namespace conqorial_log
 
@@ -118,6 +139,8 @@ extern release_error rerr;
 #define LOG_ERROR conqorial_log::derr.set_location(__FILE__, __LINE__); conqorial_log::derr
 #define LOG_RELEASE conqorial_log::rout.set_location(__FILE__, __LINE__); conqorial_log::rout
 #define LOG_RELEASE_ERROR conqorial_log::rerr.set_location(__FILE__, __LINE__); conqorial_log::rerr
+#define LOG_DISTRIBUTION conqorial_log::diout.set_location(__FILE__, __LINE__); conqorial_log::diout
+#define LOG_DISTRIBUTION_ERROR conqorial_log::dierr.set_location(__FILE__, __LINE__); conqorial_log::dierr
 
 // Base assert implementation with optional code to execute on failure
 #define CONQORIAL_ASSERT_ALL(x, msg, ...) { \
