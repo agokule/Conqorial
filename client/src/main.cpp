@@ -119,7 +119,7 @@ SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event) {
                 auto attack_info = ongoing_attacks_for_player.emplace(
                     std::piecewise_construct,
                     std::forward_as_tuple(tile.owner),
-                    std::forward_as_tuple(state.player_country, defender, troops_to_attack)
+                    std::forward_as_tuple(state.player_country.get_id(), tile.owner, troops_to_attack)
                 );
 
                 // If the player is already attacking the defender, simply add troops to the attack.

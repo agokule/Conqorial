@@ -4,7 +4,6 @@
 #include "Country.h"
 #include "typedefs.h"
 #include <map>
-#include <optional>
 #include <utility>
 #include <set>
 
@@ -14,9 +13,9 @@ struct Attack {
     unsigned troops_to_attack;
     std::vector<std::pair<unsigned, unsigned>> current_boder;
 
-    Attack(Country &attacker, std::optional<Country> &defender, unsigned troops_to_attack) :
-        attacker {attacker.get_id()},
-        defender {static_cast<CountryId>(defender.has_value() ? defender->get_id() : 0)},
+    Attack(CountryId attacker, CountryId defender, unsigned troops_to_attack) :
+        attacker {attacker},
+        defender {defender},
         troops_to_attack {troops_to_attack},
         current_boder {}
     {}
