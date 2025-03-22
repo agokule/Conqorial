@@ -21,6 +21,8 @@ SDL_Color get_tile_color(MapTileType type) {
         case MapTileType::Mountain:
             return {100, 100, 100, 255};
     }
+    LOG_DISTRIBUTION_ERROR << "Unknown map tile type: " << static_cast<int>(type);
+    return {0, 0, 0, 0};
 }
 
 SDL_Color get_tile_display_color(const MapTile &tile, const std::map<CountryId, Country> &countries) {
