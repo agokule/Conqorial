@@ -5,8 +5,6 @@
 std::set<std::pair<unsigned, unsigned>> Attack::advance(Map &map, std::map<CountryId, Country> &countries) {
     double troop_cost_per_pixel = 1.0;
 
-    LOG_DEBUG << "Defender: " << (this->defender != 0 ? "true" : "false") << '\n';
-
     std::optional<Country> defender {};
     if (this->defender != 0)
         defender = countries.at(this->defender);
@@ -21,8 +19,6 @@ std::set<std::pair<unsigned, unsigned>> Attack::advance(Map &map, std::map<Count
     LOG_DEBUG << "Troops to attack: " << this->troops_to_attack << '\n';
 
     unsigned pixels_to_capture {static_cast<unsigned int>(this->troops_to_attack / troop_cost_per_pixel)};
-
-    LOG_DEBUG << "Getting border, pixels to capture: " << pixels_to_capture << "\n";
 
     // get border between this and other
     std::set<std::pair<unsigned, unsigned>> border;
@@ -60,7 +56,6 @@ std::set<std::pair<unsigned, unsigned>> Attack::advance(Map &map, std::map<Count
                 }
             }
         }
-        LOG_DEBUG << "Border size: " << border.size() << '\n';
         LOG_DEBUG << "Cached border size: " << this->current_boder.size() << '\n';
     }
 

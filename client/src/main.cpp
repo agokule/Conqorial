@@ -135,7 +135,6 @@ SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event) {
                     LOG_DEBUG << "Updating attack...\n";
                     auto tiles_to_update = attack->second.advance(state.map, state.countries);
                     if (!tiles_to_update.empty()) {
-                        LOG_DEBUG << "Updating " << tiles_to_update.size() << " tiles\n";
                         uint8_t *pixels = nullptr;
                         int pitch = 0;
                         auto format = SDL_GetPixelFormatDetails(state.map_texture->format);
@@ -150,7 +149,6 @@ SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event) {
                         }
                         SDL_UnlockTexture(state.map_texture);
                     }
-                    LOG_DEBUG << "Attack result: " << !tiles_to_update.empty() << '\n';
                     if (tiles_to_update.empty())
                         state.on_going_attacks[state.player_country.get_id()].erase(attack);
                     return !tiles_to_update.empty();
@@ -174,7 +172,7 @@ SDL_AppResult SDL_AppIterate(void *appstate) {
         LOG_DEBUG << (it == state.callback_functions.end()) << '\n';
         if (!it->operator()()) {
             it = state.callback_functions.erase(it);
-            it--;
+            --it;
         }
     }
 
