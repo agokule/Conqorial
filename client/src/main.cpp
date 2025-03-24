@@ -166,6 +166,9 @@ SDL_AppResult SDL_AppIterate(void *appstate) {
     AppState &state = *static_cast<AppState *>(appstate);
     SDL_Renderer *renderer = state.renderer;
 
+    auto frame_time = SDL_GetTicks() - state.last_frame_time;
+    state.last_frame_time = SDL_GetTicks();
+
     // run callbacks.
     for (auto it = state.callback_functions.begin(); it != state.callback_functions.end(); it++) {
         LOG_DEBUG << "Running callback...\n";
@@ -188,6 +191,8 @@ SDL_AppResult SDL_AppIterate(void *appstate) {
     if (ImGui::Button("Reset view")) {
         state.dst_map_to_display = { 0, 0, (float)state.map.get_width(), (float)state.map.get_height()};
     }
+    ImGui::Text("Frame time: %llu", frame_time);
+    ImGui::Text("FPS: %.2f", ImGui::GetIO().Framerate);
     ImGui::End();
 
     draw_map_texture(state.map_texture, renderer, state.dst_map_to_display);

@@ -17,6 +17,8 @@ struct AppState {
     SDL_Texture *map_texture = nullptr;
 
     ImVec4 color = { 0, 0, 0, 255 };
+    uint64_t last_frame_time;
+
     Map map;
 
     SDL_FRect dst_map_to_display;
@@ -33,7 +35,7 @@ struct AppState {
 
     AppState(const Map &map)
         : window(nullptr), renderer(nullptr), map_texture(nullptr),
-          color({ 0, 0, 0, 255 }), map(map),
+          color({ 0, 0, 0, 255 }), last_frame_time {SDL_GetTicks()}, map(map),
           dst_map_to_display({ 0, 0, (float)map.get_width(), (float)map.get_height()}),
           player_country { 1, "Player", true, {0, 0, 0, 0} },
           countries {},
