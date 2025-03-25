@@ -71,7 +71,7 @@ std::set<std::pair<unsigned, unsigned>> Attack::advance(Map &map, std::map<Count
         attacker.troops -= troop_cost_per_pixel;
         this->troops_to_attack -= troop_cost_per_pixel;
     }
-    this->current_boder = std::vector(border.begin(), border.end());
+    this->current_boder = border;
     return border;
 }
 

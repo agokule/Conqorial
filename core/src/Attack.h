@@ -3,15 +3,13 @@
 
 #include "Country.h"
 #include "typedefs.h"
-#include <map>
-#include <utility>
 #include <set>
 
 struct Attack {
     CountryId attacker;
     CountryId defender;
     unsigned troops_to_attack;
-    std::vector<std::pair<unsigned, unsigned>> current_boder;
+    std::set<std::pair<unsigned, unsigned>> current_boder;
 
     Attack(CountryId attacker, CountryId defender, unsigned troops_to_attack) :
         attacker {attacker},
