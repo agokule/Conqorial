@@ -10,6 +10,7 @@
 #include "imgui.h"
 #include "Map.h"
 #include "typedefs.h"
+#include "utils.h"
 
 struct AppState {
     SDL_Window *window = nullptr;
@@ -18,6 +19,7 @@ struct AppState {
 
     ImVec4 color = { 0, 0, 0, 255 };
     uint64_t last_frame_time;
+    ScrollingBuffer frame_rates;
 
     Map map;
 

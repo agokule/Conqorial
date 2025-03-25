@@ -24,6 +24,8 @@ add_executable(Conqorial-Client ${CLIENT_SOURCES}
   dependencies/imgui/backends/imgui_impl_sdl3.cpp
   dependencies/imgui/backends/imgui_impl_sdlrenderer3.cpp
   dependencies/imgui/misc/cpp/imgui_stdlib.cpp
+  dependencies/implot/implot.cpp
+  dependencies/implot/implot_items.cpp
 )
 
 add_subdirectory(dependencies/SDL-3.2.8 EXCLUDE_FROM_ALL)
@@ -34,6 +36,7 @@ target_include_directories(Conqorial-Client PRIVATE
   dependencies/imgui
   dependencies/imgui/backends
   dependencies/imgui/misc/cpp
+  dependencies/implot
 )
 
 # Configure the preprocessor definitions based on build type

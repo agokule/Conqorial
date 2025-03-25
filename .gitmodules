@@ -1,3 +1,6 @@
 [submodule "client/dependencies/imgui"]
 	path = client/dependencies/imgui
 	url = https://github.com/ocornut/imgui.git
+[submodule "client/dependencies/implot"]
+    path = client/dependencies/implot
+    url = https://github.com/epezent/implot.git

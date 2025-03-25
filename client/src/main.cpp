@@ -16,6 +16,8 @@
 #include "imgui_impl_sdl3.h"
 #include "imgui_impl_sdlrenderer3.h"
 
+#include "implot.h"
+
 #include "AppState.h"
 
 #include "Map.h"
@@ -47,6 +49,8 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
     // For an Emscripten build we are disabling file-system access, so let's not attempt to do a fopen() of the imgui.ini file.
     // You may manually call LoadIniSettingsFromMemory() to load settings from your own storage.
     io.IniFilename = nullptr;
+
+    ImPlot::CreateContext();
 
     LOG_RELEASE << "Initializing Map texture\n";
     state->map_texture = init_map_texture(state->map, state->renderer, state->countries);
@@ -193,6 +197,17 @@ SDL_AppResult SDL_AppIterate(void *appstate) {
     }
     ImGui::Text("Frame time: %llu", frame_time);
     ImGui::Text("FPS: %.2f", ImGui::GetIO().Framerate);
+
+    state.frame_rates.AddPoint(SDL_GetTicks(), ImGui::GetIO().Framerate);
+
+    if (ImPlot::BeginPlot("Frame Rate")) {
+        ImPlot::SetupAxisLimits(ImAxis_X1, (state.frame_rates.Data.begin() + state.frame_rates.Offset)->x,
+                                SDL_GetTicks(), ImGuiCond_Always);
+        ImPlot::SetupAxisLimits(ImAxis_Y1, 0, 240, ImGuiCond_Always);
+        ImPlot::PlotLine("FPS", &state.frame_rates.Data[0].x, &state.frame_rates.Data[0].y,
+                         state.frame_rates.Data.size(), 0, state.frame_rates.Offset, 2 * sizeof(float));
+        ImPlot::EndPlot();
+    }
     ImGui::End();
 
     draw_map_texture(state.map_texture, renderer, state.dst_map_to_display);
@@ -211,6 +226,7 @@ void SDL_AppQuit(void *appstate, SDL_AppResult result) {
     AppState *state = static_cast<AppState *>(appstate);
     ImGui_ImplSDL3_Shutdown();
     ImGui_ImplSDLRenderer3_Shutdown();
+    ImPlot::DestroyContext();
     ImGui::DestroyContext();
     SDL_DestroyTexture(state->map_texture);
     SDL_DestroyRenderer(state->renderer);
