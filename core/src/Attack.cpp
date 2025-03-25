@@ -15,8 +15,8 @@ std::set<std::pair<unsigned, unsigned>> Attack::advance(Map &map, std::map<Count
         troop_cost_per_pixel += (double)defender->troops / attacker.troops - 1;
     }
 
-    LOG_DEBUG << "Troop cost per pixel: " << troop_cost_per_pixel << '\n';
-    LOG_DEBUG << "Troops to attack: " << this->troops_to_attack << '\n';
+    CQ_LOG_DEBUG << "Troop cost per pixel: " << troop_cost_per_pixel << '\n';
+    CQ_LOG_DEBUG << "Troops to attack: " << this->troops_to_attack << '\n';
 
     unsigned pixels_to_capture {static_cast<unsigned int>(this->troops_to_attack / troop_cost_per_pixel)};
 
@@ -56,13 +56,13 @@ std::set<std::pair<unsigned, unsigned>> Attack::advance(Map &map, std::map<Count
                 }
             }
         }
-        LOG_DEBUG << "Cached border size: " << this->current_boder.size() << '\n';
+        CQ_LOG_DEBUG << "Cached border size: " << this->current_boder.size() << '\n';
     }
 
     CONQORIAL_ASSERT_ALL(!border.empty(), "I thought there was a border but it is empty???", return {};);
 
     if (border.size() > pixels_to_capture) {
-        LOG_RELEASE_ERROR << "Not enough troops" << '\n';
+        CQ_LOG_RELEASE_ERROR << "Not enough troops" << '\n';
         return {};
     }
 

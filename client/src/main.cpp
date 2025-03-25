@@ -24,18 +24,18 @@
 
 /* This function runs once at startup. */
 SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
-    LOG_DEBUG << "Hello World!\n";
+    CQ_LOG_DEBUG << "Hello World!\n";
     AppState *state = new AppState({ 600, 600 });
     *appstate = state;
 
-    LOG_RELEASE << "Initializing SDL\n";
+    CQ_LOG_RELEASE << "Initializing SDL\n";
     /* Create the window */
     if (!SDL_CreateWindowAndRenderer("Hello World", 800, 600, SDL_WINDOW_FULLSCREEN, &state->window, &state->renderer)) {
         SDL_Log("Couldn't create window and renderer: %s", SDL_GetError());
         return SDL_APP_FAILURE;
     }
 
-    LOG_RELEASE << "Initializing ImGui\n";
+    CQ_LOG_RELEASE << "Initializing ImGui\n";
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGuiIO &io = ImGui::GetIO(); (void)io;
@@ -52,7 +52,7 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
 
     ImPlot::CreateContext();
 
-    LOG_RELEASE << "Initializing Map texture\n";
+    CQ_LOG_RELEASE << "Initializing Map texture\n";
     state->map_texture = init_map_texture(state->map, state->renderer, state->countries);
 
     SDL_SetTextureScaleMode(state->map_texture, SDL_SCALEMODE_NEAREST);
@@ -111,7 +111,7 @@ SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event) {
                 unsigned troops_to_attack = 10000;
                 bool able_to_attack = state.player_country.can_attack(tile.owner, {tileX, tileY}, state.map);
 
-                LOG_DEBUG << "Can attack: " << able_to_attack << "\n";
+                CQ_LOG_DEBUG << "Can attack: " << able_to_attack << "\n";
                 if (!able_to_attack)
                     return SDL_APP_CONTINUE;
 
@@ -136,7 +136,7 @@ SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event) {
                 auto &attack = attack_info.first;
 
                 auto callback = [attack, &state]() {
-                    LOG_DEBUG << "Updating attack...\n";
+                    CQ_LOG_DEBUG << "Updating attack...\n";
                     auto tiles_to_update = attack->second.advance(state.map, state.countries);
                     if (!tiles_to_update.empty()) {
                         uint8_t *pixels = nullptr;
@@ -175,8 +175,8 @@ SDL_AppResult SDL_AppIterate(void *appstate) {
 
     // run callbacks.
     for (auto it = state.callback_functions.begin(); it != state.callback_functions.end(); it++) {
-        LOG_DEBUG << "Running callback...\n";
-        LOG_DEBUG << (it == state.callback_functions.end()) << '\n';
+        CQ_LOG_DEBUG << "Running callback...\n";
+        CQ_LOG_DEBUG << (it == state.callback_functions.end()) << '\n';
         if (!it->operator()()) {
             it = state.callback_functions.erase(it);
             --it;
@@ -222,7 +222,7 @@ SDL_AppResult SDL_AppIterate(void *appstate) {
 
 /* This function runs once at shutdown. */
 void SDL_AppQuit(void *appstate, SDL_AppResult result) {
-    LOG_RELEASE << "Exiting right now...\n";
+    CQ_LOG_RELEASE << "Exiting right now...\n";
     AppState *state = static_cast<AppState *>(appstate);
     ImGui_ImplSDL3_Shutdown();
     ImGui_ImplSDLRenderer3_Shutdown();

@@ -21,7 +21,7 @@ SDL_Color get_tile_color(MapTileType type) {
         case MapTileType::Mountain:
             return {100, 100, 100, 255};
     }
-    LOG_DISTRIBUTION_ERROR << "Unknown map tile type: " << static_cast<int>(type);
+    CQ_LOG_DIST_ERROR << "Unknown map tile type: " << static_cast<int>(type);
     return {0, 0, 0, 0};
 }
 
@@ -59,8 +59,8 @@ SDL_Texture *init_map_texture(const Map &map, SDL_Renderer *renderer, const std:
         return nullptr;
 
     auto size = width * height * format->bytes_per_pixel;
-    LOG_DEBUG << "Allocating " << size << " bytes for map texture\n";
-    LOG_DEBUG << "Height is " << height << " and width is " << width << " and pitch is " << pitch << " and bytes per pixel is " << (short)format->bytes_per_pixel << '\n';
+    CQ_LOG_DEBUG << "Allocating " << size << " bytes for map texture\n";
+    CQ_LOG_DEBUG << "Height is " << height << " and width is " << width << " and pitch is " << pitch << " and bytes per pixel is " << (short)format->bytes_per_pixel << '\n';
 
     for (unsigned y = 0; y < height; y++) {
         for (unsigned x = 0; x < width; x++) {

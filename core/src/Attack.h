@@ -4,6 +4,7 @@
 #include "Country.h"
 #include "typedefs.h"
 #include <set>
+#include <map>
 
 struct Attack {
     CountryId attacker;

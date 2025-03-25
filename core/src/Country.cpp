@@ -6,7 +6,7 @@ bool Country::can_attack(CountryId other_id, std::pair<unsigned, unsigned> pos, 
     if (!(other_id != this->id && map.get_tile(pos.first, pos.second).type != MapTileType::Water))
         return false;
     if (map.get_tile(pos.first, pos.second).owner != other_id) {
-        LOG_RELEASE_ERROR << "Huh what? The other id does not equal the tile owner" << '\n';
+        CQ_LOG_RELEASE_ERROR << "Huh what? The other id does not equal the tile owner" << '\n';
         return false;
     }
 

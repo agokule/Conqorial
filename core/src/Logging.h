@@ -134,15 +134,30 @@ extern distribution_error dierr;
 
 } // namespace conqorial_log
 
-// Macros to capture file and line info
-#define LOG_DEBUG conqorial_log::dout.set_location(__FILE__, __LINE__); conqorial_log::dout
-#define LOG_ERROR conqorial_log::derr.set_location(__FILE__, __LINE__); conqorial_log::derr
-#define LOG_RELEASE conqorial_log::rout.set_location(__FILE__, __LINE__); conqorial_log::rout
-#define LOG_RELEASE_ERROR conqorial_log::rerr.set_location(__FILE__, __LINE__); conqorial_log::rerr
-#define LOG_DISTRIBUTION conqorial_log::diout.set_location(__FILE__, __LINE__); conqorial_log::diout
-#define LOG_DISTRIBUTION_ERROR conqorial_log::dierr.set_location(__FILE__, __LINE__); conqorial_log::dierr
+
+// This logs as if logging to std::cout.
+// It only runs in debug mode
+#define CQ_LOG_DEBUG conqorial_log::dout.set_location(__FILE__, __LINE__); conqorial_log::dout
+// Logs as if logging to std::cerr
+// Only runs in debug mode
+#define CQ_LOG_DEBUG_ERROR conqorial_log::derr.set_location(__FILE__, __LINE__); conqorial_log::derr
+
+// Logs as if logging to std::cout
+// Only logs in Release, and Debug mode but not in Distribution mode
+#define CQ_LOG_RELEASE conqorial_log::rout.set_location(__FILE__, __LINE__); conqorial_log::rout
+// Logs as if logging to std::cerr
+// Only logs in Release, and Debug mode but not in Distribution mode
+#define CQ_LOG_RELEASE_ERROR conqorial_log::rerr.set_location(__FILE__, __LINE__); conqorial_log::rerr
+
+// Logs as if logging to std::cout
+// Logs on all configuration modes
+#define CQ_LOG_DIST conqorial_log::diout.set_location(__FILE__, __LINE__); conqorial_log::diout
+// Logs as if logging to std::cerr
+// Logs on all configuration modes
+#define CQ_LOG_DIST_ERROR conqorial_log::dierr.set_location(__FILE__, __LINE__); conqorial_log::dierr
 
 // Base assert implementation with optional code to execute on failure
+// Runs on all configurations (Debug, Release, Distribution)
 #define CONQORIAL_ASSERT_ALL(x, msg, ...) { \
     if (!(x)) { \
         std::cerr << "Assertion on " << get_short_path(__FILE__) << ':' << __LINE__ << " failed: " << #x << ' ' << (msg) << '\n'; \
