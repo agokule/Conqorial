@@ -42,6 +42,10 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
 
+    ImFontConfig font_cfg;
+    font_cfg.SizePixels = 24.0f; // Base font size
+    io.Fonts->AddFontDefault(&font_cfg);
+
     ImGui::StyleColorsDark();
     ImGui_ImplSDL3_InitForSDLRenderer(state->window, state->renderer);
     ImGui_ImplSDLRenderer3_Init(state->renderer);
@@ -78,6 +82,7 @@ SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event) {
         // Choose a zoom factor. For example, a wheel notch scales by 10%
         float zoom_factor = 1.0f + event->wheel.y * 0.1f;
         zoom_map(zoom_factor, event->wheel.mouse_x, event->wheel.mouse_y, state);
+        state.region_cache_needs_update = true;
     } else if (event->type == SDL_EVENT_MOUSE_BUTTON_DOWN) {
         // Convert mouse coordinates (from the event) to map tile coordinates.
         float relX = event->button.x - state.dst_map_to_display.x;
@@ -155,11 +160,13 @@ SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event) {
                     }
                     if (tiles_to_update.empty())
                         state.on_going_attacks[state.player_country.get_id()].erase(attack);
+                    state.region_cache_needs_update = true;
                     return !tiles_to_update.empty();
                 };
                 state.callback_functions.emplace_back(callback);
             }
         }
+        state.region_cache_needs_update = true;
     }
     return SDL_APP_CONTINUE;
 }
@@ -208,6 +215,13 @@ SDL_AppResult SDL_AppIterate(void *appstate) {
                          state.frame_rates.Data.size(), 0, state.frame_rates.Offset, 2 * sizeof(float));
         ImPlot::EndPlot();
     }
+
+    ImDrawList* draw_list = ImGui::GetBackgroundDrawList();
+    render_country_labels(state.renderer, draw_list, state.map, 
+                        state.dst_map_to_display, state.countries,
+                        state.region_cache, state.region_cache_needs_update);
+    state.region_cache_needs_update = false; // Reset after update
+
     ImGui::End();
 
     draw_map_texture(state.map_texture, renderer, state.dst_map_to_display);

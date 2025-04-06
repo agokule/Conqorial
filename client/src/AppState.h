@@ -4,6 +4,7 @@
 #include <map>
 #include <vector>
 #include "Attack.h"
+#include "NameRendering.h"
 #include "GameState.h"
 #include "Country.h"
 #include "SDL3/SDL_render.h"
@@ -21,6 +22,9 @@ struct AppState {
     uint64_t last_frame_time;
     ScrollingBuffer frame_rates;
 
+    RegionCache region_cache;
+    bool region_cache_needs_update = true;
+
     Map map;
 
     SDL_FRect dst_map_to_display;
@@ -37,7 +41,8 @@ struct AppState {
 
     AppState(const Map &map)
         : window(nullptr), renderer(nullptr), map_texture(nullptr),
-          color({ 0, 0, 0, 255 }), last_frame_time {SDL_GetTicks()}, map(map),
+          color({ 0, 0, 0, 255 }), last_frame_time {SDL_GetTicks()},
+          region_cache {}, map {map},
           dst_map_to_display({ 0, 0, (float)map.get_width(), (float)map.get_height()}),
           player_country { 1, "Player", true, {0, 0, 0, 0} },
           countries {},
