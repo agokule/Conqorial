@@ -1,4 +1,5 @@
 #include "NameRendering.h"
+#include "Logging.h"
 #include "Country.h"
 #include "Map.h"
 #include "SDL3/SDL_render.h"
@@ -144,12 +145,13 @@ void render_country_labels(SDL_Renderer* renderer, ImDrawList* draw_list,
         if (country_id == 0) continue;
 
         if (update_cache || cache.find(country_id) == cache.end()) {
+            CQ_LOG_DEBUG << "Updating region cache for country " << (short)country_id << '\n';
             std::vector<CountryRegion> regions;
             find_country_regions(map, country_id, regions, countries);
             cache[country_id] = regions;
         }
 
-        for (const auto& region : cache[country_id]) {
+        for (const auto &region : cache[country_id]) {
             // Combine region size and zoom scaling
             float area_scale = std::clamp(region.area / max_region_area, 0.2f, 1.0f);
             float font_size = (min_font_size + (max_font_size - min_font_size) * area_scale) * zoom_scale;
@@ -169,12 +171,13 @@ void render_country_labels(SDL_Renderer* renderer, ImDrawList* draw_list,
 
             // Prepare text and calculate size
             const std::string &country_name = country.get_name();
-            const std::string &troops_str = std::to_string(country.get_troops());
+            std::string troops_str = std::to_string(country.get_troops());
             unsigned longest_len = std::max(country_name.length(), troops_str.length());
             std::stringstream text;
             text << std::setw((longest_len - country_name.length()) / 2 + 1) << country.get_name() << "\n"
                  << std::setw((longest_len - troops_str.length()) / 2 + 1) << troops_str;
-            ImVec2 text_size = ImGui::CalcTextSize(text.str().c_str(), nullptr, false, -1.0f);
+            std::string formatted_text = text.str();
+            ImVec2 text_size = ImGui::CalcTextSize(formatted_text.c_str(), nullptr, false, -1.0f);
 
             // Viewport culling
             ImVec2 text_min(screen_x - text_size.x * 0.5f, screen_y - text_size.y * 0.5f);
@@ -189,7 +192,7 @@ void render_country_labels(SDL_Renderer* renderer, ImDrawList* draw_list,
             }
 
             // Draw with scaled font
-            draw_list->AddText(nullptr, font_size, text_min, text_color, text.str().c_str());
+            draw_list->AddText(nullptr, font_size, text_min, text_color, formatted_text.c_str());
         }
     }
 }
