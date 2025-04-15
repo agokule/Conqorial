@@ -272,8 +272,11 @@ void render_country_labels(SDL_Renderer* renderer, ImDrawList* draw_list,
                          RegionCache& cache, bool update_cache) {
     static const float map_width = static_cast<float>(map.get_width());
     static const float map_height = static_cast<float>(map.get_height());
-    static const float min_font_size = 8.0f;
-    static const float max_font_size = 36.0f;
+
+    // Get ImGui scaling factor to ensure we respect UI scaling
+    float imgui_scale = ImGui::GetIO().FontGlobalScale;
+    float min_font_size = 8.0f * imgui_scale;
+    float max_font_size = 36.0f * imgui_scale;
     
     // Early exit if no countries or if view is invalid
     if (countries.empty() || view_rect.w <= 0 || view_rect.h <= 0) {
