@@ -36,9 +36,14 @@ struct DistanceCell {
 
 using RegionCache = std::unordered_map<CountryId, std::vector<RegionWithRectangle>>;
 
+// Timestamp for cache invalidation
+struct CacheTimestamp {
+    static uint64_t last_update;
+    static uint64_t get_current_time();
+    static bool should_update(uint64_t interval_ms);
+};
+
 void render_country_labels(SDL_Renderer* renderer, ImDrawList* draw_list, 
                          const Map& map, const SDL_FRect& view_rect,
                          const std::map<CountryId, Country>& countries,
                          RegionCache& cache, bool update_cache);
-
-
