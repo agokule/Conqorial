@@ -27,82 +27,43 @@ bool CacheTimestamp::should_update(uint64_t interval_ms) {
 }
 
 // Find the largest inscribed rectangle within a region
-void find_largest_rectangle(const std::vector<std::pair<int, int>>& region_tiles, 
-                          int map_width, int map_height, 
+void find_largest_rectangle(const std::vector<bool>& grid, 
+                          int grid_width, int grid_height,
+                          const Coordinate& min_bounds, const Coordinate& max_bounds,
                           int& out_x, int& out_y, int& out_width, int& out_height) {
-    if (region_tiles.empty()) {
+    if (grid.empty() || grid_width <= 0 || grid_height <= 0) {
         out_x = out_y = out_width = out_height = 0;
         return;
     }
     
-    // Find bounding box of the region to reduce grid size
-    int min_x = map_width, min_y = map_height, max_x = 0, max_y = 0;
-    for (const auto& [x, y] : region_tiles) {
-        min_x = std::min(min_x, x);
-        min_y = std::min(min_y, y);
-        max_x = std::max(max_x, x);
-        max_y = std::max(max_y, y);
-    }
-    
-    // Add a small margin to ensure we don't go out of bounds
-    min_x = std::max(0, min_x);
-    min_y = std::max(0, min_y);
-    max_x = std::min(map_width - 1, max_x);
-    max_y = std::min(map_height - 1, max_y);
-    
-    // Calculate grid dimensions
-    int grid_width = max_x - min_x + 1;
-    int grid_height = max_y - min_y + 1;
-    
     // Early exit for tiny regions
     if (grid_width <= 2 || grid_height <= 2) {
-        out_x = min_x;
-        out_y = min_y;
+        out_x = min_bounds.x;
+        out_y = min_bounds.y;
         out_width = grid_width;
         out_height = grid_height;
         return;
     }
     
-    // Create a grid representation of the region (only for the bounding box)
-    std::vector<std::vector<bool>> grid(grid_height, std::vector<bool>(grid_width, false));
+    // Distance maps for horizontal and vertical distances (flat array)
+    std::vector<DistanceCell> distance(grid_width * grid_height, {0, 0});
     
-    // Use a flat map for faster lookups
-    std::vector<bool> flat_grid(map_width * map_height, false);
-    for (const auto& [x, y] : region_tiles) {
-        if (x >= 0 && x < map_width && y >= 0 && y < map_height) {
-            flat_grid[y * map_width + x] = true;
-            
-            // Also fill the smaller grid
-            if (x >= min_x && x <= max_x && y >= min_y && y <= max_y) {
-                grid[y - min_y][x - min_x] = true;
-            }
-        }
-    }
-    
-    // Distance maps for horizontal and vertical distances
-    std::vector<std::vector<DistanceCell>> distance(grid_height, 
-                                                 std::vector<DistanceCell>(grid_width, {0, 0}));
-    
-    // Calculate horizontal distances (distance to left edge)
+    // Calculate horizontal and vertical distances in a single pass
     for (int y = 0; y < grid_height; y++) {
         for (int x = 0; x < grid_width; x++) {
-            if (!grid[y][x]) {
-                distance[y][x].horizontal_distance = 0;
+            int idx = y * grid_width + x;
+            
+            if (!grid[idx]) {
+                distance[idx].horizontal_distance = 0;
+                distance[idx].vertical_distance = 0;
             } else {
-                distance[y][x].horizontal_distance = (x > 0) ? 
-                    distance[y][x-1].horizontal_distance + 1 : 1;
-            }
-        }
-    }
-    
-    // Calculate vertical distances (distance to top edge)
-    for (int x = 0; x < grid_width; x++) {
-        for (int y = 0; y < grid_height; y++) {
-            if (!grid[y][x]) {
-                distance[y][x].vertical_distance = 0;
-            } else {
-                distance[y][x].vertical_distance = (y > 0) ? 
-                    distance[y-1][x].vertical_distance + 1 : 1;
+                // Calculate horizontal distance (from left)
+                distance[idx].horizontal_distance = (x > 0) ? 
+                    distance[y * grid_width + (x-1)].horizontal_distance + 1 : 1;
+                
+                // Calculate vertical distance (from top)
+                distance[idx].vertical_distance = (y > 0) ? 
+                    distance[(y-1) * grid_width + x].vertical_distance + 1 : 1;
             }
         }
     }
@@ -112,19 +73,21 @@ void find_largest_rectangle(const std::vector<std::pair<int, int>>& region_tiles
     out_x = out_y = out_width = out_height = 0;
     
     // Use a heuristic to prioritize more square-like rectangles
-    // by giving a slight bonus to rectangles with better aspect ratios
-    const float aspect_ratio_weight = 0.05f; // Small weight to avoid distorting the results too much
+    // by giving a bonus to rectangles with better aspect ratios
+    const float aspect_ratio_weight = 30.0f;
     
     for (int y = 0; y < grid_height; y++) {
         for (int x = 0; x < grid_width; x++) {
-            if (!grid[y][x]) continue;
+            int idx = y * grid_width + x;
+            if (!grid[idx]) continue;
             
-            int min_height = distance[y][x].vertical_distance;
+            int min_height = distance[idx].vertical_distance;
             
             // Expand horizontally from this cell
-            for (int width = 1; width <= distance[y][x].horizontal_distance; width++) {
+            for (int width = 1; width <= distance[idx].horizontal_distance; width++) {
                 // Check height constraint as we expand horizontally
-                min_height = std::min(min_height, distance[y][x - width + 1].vertical_distance);
+                min_height = std::min(min_height, 
+                                    distance[y * grid_width + (x - width + 1)].vertical_distance);
                 int area = width * min_height;
                 
                 // Skip tiny rectangles early
@@ -140,8 +103,8 @@ void find_largest_rectangle(const std::vector<std::pair<int, int>>& region_tiles
                 // Update if this is the largest rectangle so far
                 if (adjusted_area > max_area) {
                     max_area = adjusted_area;
-                    out_x = min_x + x - width + 1;
-                    out_y = min_y + y - min_height + 1;
+                    out_x = min_bounds.x + x - width + 1;
+                    out_y = min_bounds.y + y - min_height + 1;
                     out_width = width;
                     out_height = min_height;
                 }
@@ -159,34 +122,50 @@ void find_country_regions_with_rectangles(const Map& map, CountryId country_id,
     const int map_height = map.get_height();
     std::vector<bool> visited(map_width * map_height, false);
     
-    // Pre-allocate memory for region tiles to avoid reallocations
-    std::vector<std::pair<int, int>> temp_tiles;
-    temp_tiles.reserve(map_width * map_height / 4); // Reasonable initial capacity
-    
     for (int y = 0; y < map_height; ++y) {
         for (int x = 0; x < map_width; ++x) {
             int index = y * map_width + x;
             if (visited[index] || map.get_tile(x, y).owner != country_id) continue;
             
             RegionWithRectangle region;
-            temp_tiles.clear();
+            
+            // Initialize region bounds
+            region.min_bounds = {map_width, map_height};
+            region.max_bounds = {0, 0};
             
             // Use a more efficient flood fill with a pre-allocated queue
-            std::vector<std::pair<int, int>> queue;
+            std::vector<Coordinate> queue;
             queue.reserve(map_width * map_height / 8);
             queue.push_back({x, y});
             visited[index] = true;
             
+            // Track region properties during flood fill
+            double sum_x = 0.0, sum_y = 0.0;
+            int tile_count = 0;
+            
+            // Create a grid for the region (will be sized based on bounds)
+            std::vector<bool> region_grid;
+            
             size_t queue_pos = 0;
             while (queue_pos < queue.size()) {
-                auto [curr_x, curr_y] = queue[queue_pos++];
-                temp_tiles.emplace_back(curr_x, curr_y);
+                Coordinate curr = queue[queue_pos++];
+                
+                // Update region bounds
+                region.min_bounds.x = std::min(region.min_bounds.x, curr.x);
+                region.min_bounds.y = std::min(region.min_bounds.y, curr.y);
+                region.max_bounds.x = std::max(region.max_bounds.x, curr.x);
+                region.max_bounds.y = std::max(region.max_bounds.y, curr.y);
+                
+                // Update centroid calculation
+                sum_x += curr.x + 0.5;
+                sum_y += curr.y + 0.5;
+                tile_count++;
                 
                 // Unrolled neighbor checking for better performance
                 // Check left neighbor
-                if (curr_x > 0) {
-                    int nx = curr_x - 1;
-                    int ny = curr_y;
+                if (curr.x > 0) {
+                    int nx = curr.x - 1;
+                    int ny = curr.y;
                     int neighbor_index = ny * map_width + nx;
                     if (!visited[neighbor_index] && map.get_tile(nx, ny).owner == country_id) {
                         visited[neighbor_index] = true;
@@ -195,9 +174,9 @@ void find_country_regions_with_rectangles(const Map& map, CountryId country_id,
                 }
                 
                 // Check right neighbor
-                if (curr_x < map_width - 1) {
-                    int nx = curr_x + 1;
-                    int ny = curr_y;
+                if (curr.x < map_width - 1) {
+                    int nx = curr.x + 1;
+                    int ny = curr.y;
                     int neighbor_index = ny * map_width + nx;
                     if (!visited[neighbor_index] && map.get_tile(nx, ny).owner == country_id) {
                         visited[neighbor_index] = true;
@@ -206,9 +185,9 @@ void find_country_regions_with_rectangles(const Map& map, CountryId country_id,
                 }
                 
                 // Check top neighbor
-                if (curr_y > 0) {
-                    int nx = curr_x;
-                    int ny = curr_y - 1;
+                if (curr.y > 0) {
+                    int nx = curr.x;
+                    int ny = curr.y - 1;
                     int neighbor_index = ny * map_width + nx;
                     if (!visited[neighbor_index] && map.get_tile(nx, ny).owner == country_id) {
                         visited[neighbor_index] = true;
@@ -217,9 +196,9 @@ void find_country_regions_with_rectangles(const Map& map, CountryId country_id,
                 }
                 
                 // Check bottom neighbor
-                if (curr_y < map_height - 1) {
-                    int nx = curr_x;
-                    int ny = curr_y + 1;
+                if (curr.y < map_height - 1) {
+                    int nx = curr.x;
+                    int ny = curr.y + 1;
                     int neighbor_index = ny * map_width + nx;
                     if (!visited[neighbor_index] && map.get_tile(nx, ny).owner == country_id) {
                         visited[neighbor_index] = true;
@@ -228,27 +207,49 @@ void find_country_regions_with_rectangles(const Map& map, CountryId country_id,
                 }
             }
             
-            if (temp_tiles.size() < min_region_area) continue;
+            if (tile_count < min_region_area) continue;
             
-            // Move tiles to region
-            region.tiles = std::move(temp_tiles);
-            temp_tiles.reserve(map_width * map_height / 4); // Restore capacity
+            // Store the tile count
+            region.tile_count = tile_count;
             
-            // Calculate centroid with running sum to avoid second loop
-            double sum_x = 0.0, sum_y = 0.0;
-            for (const auto& [x_pos, y_pos] : region.tiles) {
-                sum_x += x_pos + 0.5;
-                sum_y += y_pos + 0.5;
+            // Calculate centroid
+            region.centroid_x = static_cast<float>(sum_x / tile_count);
+            region.centroid_y = static_cast<float>(sum_y / tile_count);
+            
+            // Ensure bounds are within map limits
+            region.min_bounds.x = std::max(0, region.min_bounds.x);
+            region.min_bounds.y = std::max(0, region.min_bounds.y);
+            region.max_bounds.x = std::min(map_width - 1, region.max_bounds.x);
+            region.max_bounds.y = std::min(map_height - 1, region.max_bounds.y);
+            
+            // Calculate grid dimensions
+            int grid_width = region.max_bounds.x - region.min_bounds.x + 1;
+            int grid_height = region.max_bounds.y - region.min_bounds.y + 1;
+            
+            // Create a grid representation of the region
+            region_grid.resize(grid_width * grid_height, false);
+            
+            // Fill the grid
+            for (int gy = region.min_bounds.y; gy <= region.max_bounds.y; gy++) {
+                for (int gx = region.min_bounds.x; gx <= region.max_bounds.x; gx++) {
+                    int map_idx = gy * map_width + gx;
+                    if (!visited[map_idx]) continue;
+                    
+                    // Only consider tiles that are part of this region (already visited)
+                    if (map.get_tile(gx, gy).owner == country_id) {
+                        int grid_idx = (gy - region.min_bounds.y) * grid_width + (gx - region.min_bounds.x);
+                        region_grid[grid_idx] = true;
+                    }
+                }
             }
-            region.centroid_x = static_cast<float>(sum_x / region.tiles.size());
-            region.centroid_y = static_cast<float>(sum_y / region.tiles.size());
             
             // Find largest inscribed rectangle
-            find_largest_rectangle(region.tiles, map_width, map_height, 
+            find_largest_rectangle(region_grid, grid_width, grid_height, 
+                                 region.min_bounds, region.max_bounds,
                                  region.rect_x, region.rect_y, 
                                  region.rect_width, region.rect_height);
             
-            region.area = static_cast<float>(region.tiles.size());
+            region.area = static_cast<float>(tile_count);
             
             // Avoid map lookup with .at() for better performance
             const auto& country = countries.find(country_id)->second;
@@ -291,10 +292,10 @@ void render_country_labels(SDL_Renderer* renderer, ImDrawList* draw_list,
     if (update_cache) {
         cache.clear(); // Clear the cache to avoid stale data
         
+        CQ_LOG_DEBUG << "Updating region cache for countries\n";
         for (const auto& [country_id, country] : countries) {
             if (country_id == 0) continue;
             
-            CQ_LOG_DEBUG << "Updating region cache for country " << (short)country_id << '\n';
             std::vector<RegionWithRectangle> regions;
             regions.reserve(8); // Pre-allocate for typical number of regions
             find_country_regions_with_rectangles(map, country_id, regions, countries);
