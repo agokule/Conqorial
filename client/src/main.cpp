@@ -82,7 +82,6 @@ SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event) {
         // Choose a zoom factor. For example, a wheel notch scales by 10%
         float zoom_factor = 1.0f + event->wheel.y * 0.1f;
         zoom_map(zoom_factor, event->wheel.mouse_x, event->wheel.mouse_y, state);
-        state.region_cache_needs_update = true;
     } else if (event->type == SDL_EVENT_MOUSE_BUTTON_DOWN) {
         // Convert mouse coordinates (from the event) to map tile coordinates.
         float relX = event->button.x - state.dst_map_to_display.x;
