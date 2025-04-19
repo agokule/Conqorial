@@ -30,4 +30,10 @@ struct ScrollingBuffer {
     }
 };
 
+
+struct Coordinate {
+    int x;
+    int y;
+};
+
 #endif //UTILS_H
