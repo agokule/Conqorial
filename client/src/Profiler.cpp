@@ -12,7 +12,7 @@ Profiler& Profiler::instance() {
 
 Profiler::Profiler() 
     : enabled(true)
-    , max_history_size(100)
+    , max_history_size(1'000'000)
     , graph_height(200.0f)
     , history_duration(5.0f) // 5 seconds of history
     , frame_count(0)
@@ -103,7 +103,7 @@ void Profiler::render_ui() {
         
         // Prepare data for plotting
         const int visible_frames = (int)std::min(max_history_size, 
-            (size_t)(history_duration * 60.0f)); // Assuming ~60 FPS
+            (size_t)(history_duration * 120.0f)); // Assuming ~120 FPS
             
         // Find sections with data
         std::vector<std::string> active_sections;
