@@ -4,6 +4,7 @@
 #include "SDL3/SDL_events.h"
 #include "SDL3/SDL_render.h"
 #include "SDL3/SDL_video.h"
+#include <cstdint>
 #include <optional>
 #include <sys/stat.h>
 #include <utility>
@@ -141,6 +142,7 @@ SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event) {
 
                 auto callback = [attack, &state]() {
                     CQ_LOG_DEBUG << "Updating attack...\n";
+                    static unsigned short update_count = 0;
                     auto tiles_to_update = attack->second.advance(state.map, state.countries);
                     if (!tiles_to_update.empty()) {
                         uint8_t *pixels = nullptr;
@@ -159,7 +161,9 @@ SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event) {
                     }
                     if (tiles_to_update.empty())
                         state.on_going_attacks[state.player_country.get_id()].erase(attack);
-                    state.region_cache_needs_update = true;
+                    // only update the name rendering every 5 attacks
+                    if (++update_count % 5 == 0)
+                        state.region_cache_needs_update = true;
                     return !tiles_to_update.empty();
                 };
                 state.callback_functions.emplace_back(callback);
