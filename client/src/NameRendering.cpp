@@ -285,8 +285,6 @@ void render_country_labels(SDL_Renderer* renderer, ImDrawList* draw_list,
         std::string formatted_text;
         ImVec2 base_text_size;
     };
-    std::unordered_map<CountryId, TextCache> text_cache;
-    text_cache.reserve(countries.size());
     
     // Process each country using the cache
     for (const auto& [country_id, country] : countries) {
@@ -308,13 +306,11 @@ void render_country_labels(SDL_Renderer* renderer, ImDrawList* draw_list,
         if (regions_ptr->empty()) continue;
         
         // Prepare text content (cached per country)
-        auto& text_entry = text_cache[country_id];
-        if (text_entry.formatted_text.empty()) {
-            const std::string &country_name = country.get_name();
-            std::string troops_str = std::to_string(country.get_troops());
-            text_entry.formatted_text = country_name + "\n" + troops_str;
-            text_entry.base_text_size = ImGui::CalcTextSize(text_entry.formatted_text.c_str());
-        }
+        TextCache text_entry {};
+        const std::string &country_name = country.get_name();
+        std::string troops_str = std::to_string(country.get_troops());
+        text_entry.formatted_text = country_name + "\n" + troops_str;
+        text_entry.base_text_size = ImGui::CalcTextSize(text_entry.formatted_text.c_str());
         
         float base_font_size = ImGui::GetFontSize();
         
