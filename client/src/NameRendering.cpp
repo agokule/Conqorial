@@ -154,7 +154,7 @@ void find_country_regions_with_rectangles(const Map& map, CountryId country_id,
             
             // Create a grid for the region (will be sized based on bounds)
             std::vector<bool> region_grid;
-            
+
             size_t queue_pos = 0;
             while (queue_pos < queue.size()) {
                 Coordinate curr = queue[queue_pos++];
@@ -212,18 +212,17 @@ void find_country_regions_with_rectangles(const Map& map, CountryId country_id,
             // Create a grid representation of the region
             region_grid.resize(grid_width * grid_height, false);
             
-            // Fill the grid
-            for (int gy = region.min_bounds.y; gy <= region.max_bounds.y; gy++) {
-                for (int gx = region.min_bounds.x; gx <= region.max_bounds.x; gx++) {
-                    int map_idx = gy * map_width + gx;
-                    if (!visited[map_idx]) continue;
-                    
-                    // Only consider tiles that are part of this region (already visited)
-                    if (map.get_tile(gx, gy).owner == country_id) {
-                        int grid_idx = (gy - region.min_bounds.y) * grid_width + (gx - region.min_bounds.x);
-                        region_grid[grid_idx] = true;
-                    }
-                }
+            // Fill the grid using the stored region tiles
+            for(const auto& tile_coord : queue) {
+                // No need to check owner again, already confirmed during flood fill
+                 int grid_idx = (tile_coord.y - region.min_bounds.y) * grid_width + (tile_coord.x - region.min_bounds.x);
+                 // Bounds check (shouldn't be necessary if bounds calculation is correct, but safer)
+                 if (grid_idx >= 0 && grid_idx < region_grid.size()) {
+                    region_grid[grid_idx] = true;
+                 } else {
+                    // Log error if this happens, indicates bug in bounds/indexing
+                    CQ_LOG_DIST_ERROR << "Grid index out of bounds during region grid creation!\n";
+                 }
             }
             
             // Find largest inscribed rectangle
