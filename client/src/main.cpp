@@ -20,7 +20,7 @@
 #include "implot.h"
 
 #include "AppState.h"
-
+#include "Profiler.h"
 #include "Map.h"
 
 /* This function runs once at startup. */
@@ -177,11 +177,15 @@ SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event) {
 
 /* This function runs once per frame, and is the heart of the program. */
 SDL_AppResult SDL_AppIterate(void *appstate) {
+    PROFILE_SECTION("SDL_AppIterate");
+
     AppState &state = *static_cast<AppState *>(appstate);
     SDL_Renderer *renderer = state.renderer;
 
     auto frame_time = SDL_GetTicks() - state.last_frame_time;
     state.last_frame_time = SDL_GetTicks();
+
+    Profiler::instance().start_frame("Run callbacks");
 
     // run callbacks.
     for (auto it = state.callback_functions.begin(); it != state.callback_functions.end(); it++) {
@@ -192,6 +196,8 @@ SDL_AppResult SDL_AppIterate(void *appstate) {
             --it;
         }
     }
+
+    Profiler::instance().end_frame();
 
     ImGui_ImplSDL3_NewFrame();
     ImGui_ImplSDLRenderer3_NewFrame();
@@ -219,15 +225,23 @@ SDL_AppResult SDL_AppIterate(void *appstate) {
         ImPlot::EndPlot();
     }
 
+    Profiler::instance().start_frame("Render Map Names");
+
     ImDrawList* draw_list = ImGui::GetBackgroundDrawList();
     render_country_labels(state.renderer, draw_list, state.map, 
                         state.dst_map_to_display, state.countries,
                         state.region_cache, state.region_cache_needs_update);
     state.region_cache_needs_update = false; // Reset after update
 
+    Profiler::instance().end_frame();
+
     ImGui::End();
 
+    Profiler::instance().start_frame("Draw Map");
     draw_map_texture(state.map_texture, renderer, state.dst_map_to_display);
+    Profiler::instance().end_frame();
+
+    Profiler::instance().render_ui();
 
     ImGui::Render();
     ImGui_ImplSDLRenderer3_RenderDrawData(ImGui::GetDrawData(), renderer);
