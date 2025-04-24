@@ -162,47 +162,21 @@ void find_country_regions_with_rectangles(const Map& map, CountryId country_id,
                 tile_count++;
                 
                 // Unrolled neighbor checking for better performance
-                // Check left neighbor
-                if (curr.x > 0) {
-                    int nx = curr.x - 1;
-                    int ny = curr.y;
-                    int neighbor_index = ny * map_width + nx;
-                    if (!visited[neighbor_index] && map.get_tile(nx, ny).owner == country_id) {
-                        visited[neighbor_index] = true;
-                        queue.push_back({nx, ny});
-                    }
-                }
+                // Check all four neighbors using direction arrays
+                const int dx[4] = {-1, 1, 0, 0}; // left, right, top, bottom
+                const int dy[4] = {0, 0, -1, 1}; // left, right, top, bottom
                 
-                // Check right neighbor
-                if (curr.x < map_width - 1) {
-                    int nx = curr.x + 1;
-                    int ny = curr.y;
-                    int neighbor_index = ny * map_width + nx;
-                    if (!visited[neighbor_index] && map.get_tile(nx, ny).owner == country_id) {
-                        visited[neighbor_index] = true;
-                        queue.push_back({nx, ny});
-                    }
-                }
-                
-                // Check top neighbor
-                if (curr.y > 0) {
-                    int nx = curr.x;
-                    int ny = curr.y - 1;
-                    int neighbor_index = ny * map_width + nx;
-                    if (!visited[neighbor_index] && map.get_tile(nx, ny).owner == country_id) {
-                        visited[neighbor_index] = true;
-                        queue.push_back({nx, ny});
-                    }
-                }
-                
-                // Check bottom neighbor
-                if (curr.y < map_height - 1) {
-                    int nx = curr.x;
-                    int ny = curr.y + 1;
-                    int neighbor_index = ny * map_width + nx;
-                    if (!visited[neighbor_index] && map.get_tile(nx, ny).owner == country_id) {
-                        visited[neighbor_index] = true;
-                        queue.push_back({nx, ny});
+                for (int dir = 0; dir < 4; dir++) {
+                    int nx = curr.x + dx[dir];
+                    int ny = curr.y + dy[dir];
+                    
+                    // Check if neighbor is within bounds
+                    if (nx >= 0 && nx < map_width && ny >= 0 && ny < map_height) {
+                        int neighbor_index = ny * map_width + nx;
+                        if (!visited[neighbor_index] && map.get_tile(nx, ny).owner == country_id) {
+                            visited[neighbor_index] = true;
+                            queue.push_back({nx, ny});
+                        }
                     }
                 }
             }
