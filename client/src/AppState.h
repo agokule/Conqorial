@@ -36,7 +36,7 @@ struct AppState {
     std::vector<std::function<bool()>> callback_functions;
     std::map<CountryId, Country> countries;
 
-    // on_going_attacks[attacker-][defender-id]
+    // on_going_attacks[attacker-id][defender-id]
     std::map<CountryId, std::map<CountryId, Attack>> on_going_attacks;
 
     AppState(const Map &map)
