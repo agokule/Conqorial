@@ -27,6 +27,11 @@ void Profiler::start_frame(const char* name) {
     section.name = name;
     section.start_time = std::chrono::high_resolution_clock::now();
     section.depth = active_sections.size();
+
+    if (!active_sections.empty()) {
+        ProfileSection& parent = active_sections.top();
+        parent.duration_ms += std::chrono::duration<float, std::milli>(section.start_time - parent.start_time).count();
+    }
     
     active_sections.push(section);
 }
@@ -40,6 +45,11 @@ void Profiler::end_frame() {
     
     auto duration = end_time - section.start_time;
     float duration_ms = std::chrono::duration<float, std::milli>(duration).count();
+
+    if (!active_sections.empty()) {
+        ProfileSection& parent = active_sections.top();
+        parent.start_time = end_time;
+    }
     
     push_timing(section.name, duration_ms, section.depth);
 }
