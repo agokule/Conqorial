@@ -12,8 +12,8 @@ Profiler& Profiler::instance() {
 
 Profiler::Profiler() 
     : enabled(true)
-    , max_history_size(1'000'000)
-    , graph_height(200.0f)
+    , max_history_size(100'000)
+    , graph_height(250.0f)
     , history_duration(5.0f) // 5 seconds of history
     , frame_count(0)
 {}
