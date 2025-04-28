@@ -66,6 +66,8 @@ void Profiler::push_timing(const std::string& name, float duration_ms, int depth
     
     // Update depth if changed
     data.depth = std::min(data.depth, depth);
+
+    current_frame_sections.insert(name);
 }
 
 ImVec4 Profiler::generate_color(int index) const {
@@ -82,6 +84,14 @@ ImVec4 Profiler::generate_color(int index) const {
 
 void Profiler::render_ui() {
     if (!enabled || section_data.empty()) return;
+
+    std::set<std::string> sections {section_order.begin(), section_order.end()};
+    for (const auto& section : current_frame_sections)
+        sections.erase(section);
+    for (const auto& section : sections)
+        push_timing(section, 0.0f, 0);
+    
+    current_frame_sections.clear();
     
     if (ImGui::Begin("Profiler", nullptr)) {
         ImGui::Text("Performance Profiler");

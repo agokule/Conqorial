@@ -2,6 +2,7 @@
 
 #include <string>
 #include <vector>
+#include <set>
 #include <unordered_map>
 #include <chrono>
 #include <stack>
@@ -52,6 +53,7 @@ private:
     std::stack<ProfileSection> active_sections;
     std::unordered_map<std::string, SectionData> section_data;
     std::vector<std::string> section_order;
+    std::set<std::string> current_frame_sections;
     
     // Configuration
     size_t max_history_size;
