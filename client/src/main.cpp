@@ -186,7 +186,6 @@ SDL_AppResult SDL_AppIterate(void *appstate) {
     // run callbacks.
     for (auto it = state.callback_functions.begin(); it != state.callback_functions.end(); it++) {
         CQ_LOG_DEBUG << "Running callback...\n";
-        CQ_LOG_DEBUG << (it == state.callback_functions.end()) << '\n';
         if (!it->operator()()) {
             it = state.callback_functions.erase(it);
             --it;

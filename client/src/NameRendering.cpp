@@ -278,7 +278,7 @@ void render_country_labels(SDL_Renderer* renderer, ImDrawList* draw_list,
     if (update_cache) {
         cache.clear(); // Clear the cache to avoid stale data
         
-        CQ_LOG_DEBUG << "Updating region cache for countries\n";
+        CQ_LOG_DEBUG << "Updating region cache for country name rendering\n";
         for (const auto& [country_id, country] : countries) {
             if (country_id == 0) continue;
             
