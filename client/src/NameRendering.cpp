@@ -1,4 +1,5 @@
 #include "NameRendering.h"
+#include "Profiler.h"
 #include "Logging.h"
 #include "Country.h"
 #include "Map.h"
@@ -31,6 +32,8 @@ void find_largest_rectangle(const std::vector<bool>& grid,
                           int grid_width, int grid_height,
                           const Coordinate& min_bounds, const Coordinate& max_bounds,
                           int& out_x, int& out_y, int& out_width, int& out_height) {
+    PROFILE_SECTION("find_largest_rectangle");
+
     if (grid.empty() || grid_width <= 0 || grid_height <= 0) {
         out_x = out_y = out_width = out_height = 0;
         return;
@@ -126,6 +129,7 @@ void find_largest_rectangle(const std::vector<bool>& grid,
 void find_country_regions_with_rectangles(const Map& map, CountryId country_id,
                                         std::vector<RegionWithRectangle>& output,
                                         const std::map<CountryId, Country>& countries) {
+    PROFILE_SECTION("find_country_regions_with_rectangles");
     const int min_region_area = 25;
     const int map_width = map.get_width();
     const int map_height = map.get_height();
