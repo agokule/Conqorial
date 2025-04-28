@@ -43,10 +43,6 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
 
-    ImFontConfig font_cfg;
-    font_cfg.SizePixels = 24.0f; // Base font size
-    io.Fonts->AddFontDefault(&font_cfg);
-
     ImGui::StyleColorsDark();
     ImGui_ImplSDL3_InitForSDLRenderer(state->window, state->renderer);
     ImGui_ImplSDLRenderer3_Init(state->renderer);
