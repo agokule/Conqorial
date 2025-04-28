@@ -67,14 +67,10 @@ private:
 // Helper macros for easier usage
 #define PROFILE_SECTION(name) Profiler::instance().start_frame(name); \
                               auto PROFILE_LINE_HELPER_##__LINE__ = [&](const char* n) { \
-                                  return ProfilerGuard(n); \
+                                  return ProfilerGuard(); \
                               }(name);
 
 // RAII guard to automatically end a profile section
-class ProfilerGuard {
-public:
-    ProfilerGuard(const char* name) : name(name) {}
+struct ProfilerGuard {
     ~ProfilerGuard() { Profiler::instance().end_frame(); }
-private:
-    const char* name;
 };
