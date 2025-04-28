@@ -7,6 +7,21 @@
 #include <stack>
 #include "imgui.h"
 
+// Internal structures
+struct ProfileSection {
+    std::string name;
+    std::chrono::high_resolution_clock::time_point start_time;
+    float duration_ms;
+    int depth;
+};
+
+struct SectionData {
+    std::vector<float> history;
+    ImVec4 color;
+    int depth;
+    bool visible;
+};
+
 class Profiler {
 public:
     // Singleton pattern
@@ -31,21 +46,6 @@ private:
     // Prevent copying
     Profiler(const Profiler&) = delete;
     Profiler& operator=(const Profiler&) = delete;
-    
-    // Internal structures
-    struct ProfileSection {
-        std::string name;
-        std::chrono::high_resolution_clock::time_point start_time;
-        float duration_ms;
-        int depth;
-    };
-    
-    struct SectionData {
-        std::vector<float> history;
-        ImVec4 color;
-        int depth;
-        bool visible;
-    };
     
     // State
     bool enabled;
