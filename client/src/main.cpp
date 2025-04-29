@@ -64,6 +64,7 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
 
 /* This function runs when a new event (mouse input, keypresses, etc) occurs. */
 SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event) {
+    PROFILE_SECTION("SDL_AppEvent");
     ImGui_ImplSDL3_ProcessEvent(event);
     AppState &state = *static_cast<AppState *>(appstate);
     if (event->type == SDL_EVENT_QUIT) {
@@ -137,6 +138,7 @@ SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event) {
                 auto &attack = attack_info.first;
 
                 auto callback = [attack, &state]() {
+                    PROFILE_SECTION("Attack Callback");
                     CQ_LOG_DEBUG << "Updating attack...\n";
                     static unsigned short update_count = 0;
                     auto tiles_to_update = attack->second.advance(state.map, state.countries);
