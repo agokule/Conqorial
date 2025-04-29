@@ -62,64 +62,65 @@ void find_largest_rectangle(const std::vector<bool>& grid,
     for (int y = 0; y < grid_height; y++) {
         for (int x = 0; x < grid_width; x++) {
             int idx = y * grid_width + x;
+            DistanceCell &curr_cell = distance[idx];
 
             if (!grid[idx]) {
-                distance[idx].horizontal_distance = 0;
-                distance[idx].vertical_distance = 0;
+                curr_cell.horizontal_distance = 0;
+                curr_cell.vertical_distance = 0;
                 // No need to check for rectangles ending at an empty cell
                 continue;
             }
 
+            const DistanceCell &cell_left = distance[y * grid_width + (x - 1)];
+            const DistanceCell &cell_above = distance[(y - 1) * grid_width + x];
             // Calculate horizontal distance (from left)
-            distance[idx].horizontal_distance = (x > 0 && grid[y * grid_width + (x - 1)]) ?
-                distance[y * grid_width + (x - 1)].horizontal_distance + 1 : 1;
+            if (x > 0)
+                curr_cell.horizontal_distance = std::min(cell_left.horizontal_distance + 1, cell_above.horizontal_distance + 1);
+            else
+                curr_cell.horizontal_distance = 1;
 
             // Calculate vertical distance (from top)
-            distance[idx].vertical_distance = (y > 0 && grid[(y - 1) * grid_width + x]) ?
-                distance[(y - 1) * grid_width + x].vertical_distance + 1 : 1;
+            if (y > 0)
+                curr_cell.vertical_distance = std::min(cell_left.vertical_distance + 1, cell_above.vertical_distance + 1);
+            else
+                curr_cell.vertical_distance = 1;
 
             // --- Rectangle Finding Logic (Integrated) ---
             // Now that we have distances for cell (x, y), check rectangles
             // ending at this cell (bottom-right corner).
 
-            int min_height = distance[idx].vertical_distance;
+            int height = curr_cell.vertical_distance;
+            int width = curr_cell.horizontal_distance;
+            int area = width * height;
 
-            // Expand horizontally leftwards from this cell
-            for (int width = 1; width <= distance[idx].horizontal_distance; width++) {
-                // The current cell being checked is (x - width + 1, y)
-                int check_idx = y * grid_width + (x - width + 1);
-
-                // Update the minimum height encountered so far in this horizontal expansion
-                min_height = std::min(min_height, distance[check_idx].vertical_distance);
-
-                int area = width * min_height;
-
-                // Skip tiny rectangles early (can adjust threshold if needed)
-                // Note: max_adjusted_area is float, cast area for comparison potentially
-                if (static_cast<float>(area) * (1.0f + aspect_ratio_weight) < max_adjusted_area / 2.0f) {
-                     // Optimization: If even the max possible score is too small, break inner loop?
-                     // Not strictly necessary, but could prune search slightly if aspect ratio weight is high.
-                     // For now, just continue to next width.
-                     continue;
-                }
+            // Skip tiny rectangles early (can adjust threshold if needed)
+            // Note: max_adjusted_area is float, cast area for comparison potentially
+            if (static_cast<float>(area) * (1.0f + aspect_ratio_weight) < max_adjusted_area / 2.0f) {
+                // Optimization: If even the max possible score is too small, break inner loop?
+                // Not strictly necessary, but could prune search slightly if aspect ratio weight is high.
+                // For now, just continue to next width.
+                continue;
+            }
 
 
-                // Calculate aspect ratio score
-                float aspect_ratio = static_cast<float>(std::min(width, min_height)) /
-                                     static_cast<float>(std::max(width, min_height));
+            // Calculate aspect ratio score
+            float aspect_ratio = static_cast<float>(std::min(width, height)) /
+                                    static_cast<float>(std::max(width, height));
 
-                // Adjust area with aspect ratio bonus
-                float adjusted_area = static_cast<float>(area) * (1.0f + aspect_ratio_weight * aspect_ratio);
+            // Adjust area with aspect ratio bonus
+            float adjusted_area = static_cast<float>(area) * (1.0f + aspect_ratio_weight * aspect_ratio);
 
-                // Update if this is the largest rectangle so far
-                if (adjusted_area > max_adjusted_area) {
-                    max_adjusted_area = adjusted_area;
-                    // Calculate top-left corner based on current bottom-right (x,y) and dimensions
-                    out_x = min_bounds.x + x - width + 1;
-                    out_y = min_bounds.y + y - min_height + 1;
-                    out_width = width;
-                    out_height = min_height;
-                }
+            // Update if this is the largest rectangle so far
+            int rect_x = x - width + 1;
+            int rect_y = y - height + 1;
+
+            if (adjusted_area > max_adjusted_area && grid[rect_y * grid_width + rect_x]) {
+                max_adjusted_area = adjusted_area;
+                // Calculate top-left corner based on current bottom-right (x,y) and dimensions
+                out_x = min_bounds.x + x - width + 1;
+                out_y = min_bounds.y + y - height + 1;
+                out_width = width;
+                out_height = height;
             }
         }
     }
