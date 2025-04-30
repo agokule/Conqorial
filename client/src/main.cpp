@@ -213,9 +213,11 @@ SDL_AppResult SDL_AppIterate(void *appstate) {
 
     state.frame_rates.AddPoint(SDL_GetTicks(), ImGui::GetIO().Framerate);
 
-    if (ImPlot::BeginPlot("Frame Rate")) {
+    if (ImPlot::BeginPlot("##Frame Rate Details", ImVec2(-1, 100), ImPlotFlags_NoLegend)) {
         ImPlot::SetupAxisLimits(ImAxis_X1, (state.frame_rates.Data.begin() + state.frame_rates.Offset)->x,
                                 SDL_GetTicks(), ImGuiCond_Always);
+        ImPlot::SetupAxis(ImAxis_X1, "FPS", ImPlotAxisFlags_AutoFit | ImPlotAxisFlags_NoTickLabels);
+        ImPlot::SetupAxis(ImAxis_Y1, nullptr, ImPlotAxisFlags_Opposite);
         ImPlot::SetupAxisLimits(ImAxis_Y1, 0, 240, ImGuiCond_Always);
         ImPlot::PlotLine("FPS", &state.frame_rates.Data[0].x, &state.frame_rates.Data[0].y,
                          state.frame_rates.Data.size(), 0, state.frame_rates.Offset, 2 * sizeof(float));

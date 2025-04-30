@@ -170,8 +170,8 @@ void Profiler::render_ui() {
         // Plot the data
         if (ImPlot::BeginPlot("Frame Times", ImVec2(-1, graph_height))) {
             ImPlot::SetupAxes("Frame", "Time (ms)", 
-                ImPlotAxisFlags_AutoFit, ImPlotAxisFlags_AutoFit);
-            
+                ImPlotAxisFlags_AutoFit, ImPlotAxisFlags_AutoFit | ImPlotAxisFlags_Opposite);
+
             // X-axis with frame numbers (or time)
             std::vector<float> x_data(visible_frames);
             for (int i = 0; i < visible_frames; i++) {
