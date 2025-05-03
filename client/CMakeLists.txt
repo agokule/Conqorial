@@ -7,6 +7,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # Add option for distribution mode (should match the one in core)
 option(DISTRIBUTION_MODE "Enable distribution mode" OFF)
+option(SDL_TEST_LIBRARY "Enable SDL test library" OFF)
 
 # set the output directory for built objects.
 # This makes sure that the dynamic library goes into the build directory automatically.
