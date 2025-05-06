@@ -67,7 +67,10 @@ void Profiler::push_timing(const std::string& name, float duration_ms, int depth
     }
     
     auto& data = section_data[name];
-    data.history.push_back(duration_ms);
+    if (current_frame_sections.find(name) != current_frame_sections.end())
+        *data.history.rbegin() += duration_ms;
+    else
+        data.history.push_back(duration_ms);
     
     // Limit history size
     if (data.history.size() > max_history_size) {
