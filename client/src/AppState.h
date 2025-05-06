@@ -1,9 +1,7 @@
 #pragma once
 #include <SDL3/SDL.h>
 #include <functional>
-#include <map>
 #include <vector>
-#include "Attack.h"
 #include "NameRendering.h"
 #include "GameState.h"
 #include "Country.h"
@@ -12,6 +10,7 @@
 #include "Map.h"
 #include "typedefs.h"
 #include "utils.h"
+#include "Match.h"
 
 struct AppState {
     SDL_Window *window = nullptr;
@@ -25,31 +24,23 @@ struct AppState {
     RegionCache region_cache;
     bool region_cache_needs_update = true;
 
-    Map map;
-
     SDL_FRect dst_map_to_display;
 
     // New fields for game state and player country.
     GameState game_state = GameState::SelectingStartingPoint;
-    Country player_country;
+    CountryId player_country_id;
 
     std::vector<std::function<bool()>> callback_functions;
-    std::map<CountryId, Country> countries;
-
-    // on_going_attacks[attacker-id][defender-id]
-    std::map<CountryId, std::map<CountryId, Attack>> on_going_attacks;
+    Match match;
 
     AppState(const Map &map)
         : window(nullptr), renderer(nullptr), map_texture(nullptr),
           color({ 0, 0, 0, 255 }), last_frame_time {SDL_GetTicks()},
-          region_cache {}, map {map},
+          region_cache {},
           dst_map_to_display({ 0, 0, (float)map.get_width(), (float)map.get_height()}),
-          player_country { 1, "Player", true, {0, 0, 0, 0} },
-          countries {},
-          on_going_attacks {}
+          match {map.get_width(), map.get_height()}
           {
-        countries[0] = { 0, "Neutral", false, {0, 0, 0, 0} };
-        countries[1] = player_country;
+        player_country_id = match.new_country("Player", true, {0,0,0,0}).get_id();
     };
 };
 

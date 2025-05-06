@@ -25,13 +25,13 @@ SDL_Color get_tile_color(MapTileType type) {
     return {0, 0, 0, 0};
 }
 
-SDL_Color get_tile_display_color(const MapTile &tile, const std::map<CountryId, Country> &countries) {
+SDL_Color get_tile_display_color(const MapTile &tile, const Match &match) {
     SDL_Color color = get_tile_color(tile.type);
     // If the tile has been conquered (owner != 0), tint the color.
     if (tile.owner != 0) {
-        color.r = (color.r + countries.at(tile.owner).get_color().r) / 2;
-        color.g = (color.g + countries.at(tile.owner).get_color().g) / 2;
-        color.b = (color.b + countries.at(tile.owner).get_color().b) / 2;
+        color.r = (color.r + match.get_country(tile.owner).get_color().r) / 2;
+        color.g = (color.g + match.get_country(tile.owner).get_color().g) / 2;
+        color.b = (color.b + match.get_country(tile.owner).get_color().b) / 2;
     }
     if (tile.type != MapTileType::Water)
         color.a = 255 - (std::pow((double)tile.elevation / 100.0, 2)) * 100;
@@ -40,7 +40,8 @@ SDL_Color get_tile_display_color(const MapTile &tile, const std::map<CountryId, 
     return color;
 }
 
-SDL_Texture *init_map_texture(const Map &map, SDL_Renderer *renderer, const std::map<CountryId, Country> &countries) {
+SDL_Texture *init_map_texture(SDL_Renderer *renderer, const Match &match) {
+    const Map &map = match.get_map();
     unsigned width = map.get_width(), height = map.get_height();
 
     SDL_Texture *texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_STREAMING, width, height);
@@ -65,7 +66,7 @@ SDL_Texture *init_map_texture(const Map &map, SDL_Renderer *renderer, const std:
     for (unsigned y = 0; y < height; y++) {
         for (unsigned x = 0; x < width; x++) {
             MapTile tile = map.get_tile(x, y);
-            auto color = get_tile_display_color(tile, countries);
+            auto color = get_tile_display_color(tile, match);
             pixels[y * pitch + x * format->bytes_per_pixel] = color.r;
             pixels[y * pitch + x * format->bytes_per_pixel + 1] = color.g;
             pixels[y * pitch + x * format->bytes_per_pixel + 2] = color.b;
@@ -94,5 +95,23 @@ void zoom_map(float zoom_factor, float center_x, float center_y, AppState &state
     // Update the top-left coordinates so the mouse position remains fixed in the map
     state.dst_map_to_display.x = center_x - offsetX * zoom_factor;
     state.dst_map_to_display.y = center_y - offsetY * zoom_factor;
+}
+
+void sync_map_texture(SDL_Texture *texture, const Match &match, const std::vector<std::pair<unsigned, unsigned>> &tiles_to_update) {
+    if (!tiles_to_update.empty()) {
+        uint8_t *pixels = nullptr;
+        int pitch = 0;
+        auto format = SDL_GetPixelFormatDetails(texture->format);
+        SDL_LockTexture(texture, NULL, (void**)&pixels, &pitch);
+        for (auto [x, y] : tiles_to_update) {
+            MapTile tile = match.get_map().get_tile(x, y);
+            auto color = get_tile_display_color(tile, match);
+            pixels[y * pitch + x * format->bytes_per_pixel] = color.r;
+            pixels[y * pitch + x * format->bytes_per_pixel + 1] = color.g;
+            pixels[y * pitch + x * format->bytes_per_pixel + 2] = color.b;
+            pixels[y * pitch + x * format->bytes_per_pixel + 3] = color.a;
+        }
+        SDL_UnlockTexture(texture);
+    }
 }
 
