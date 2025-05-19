@@ -7,6 +7,26 @@ bool check_time_to_update(std::chrono::time_point<std::chrono::high_resolution_c
     return std::chrono::duration_cast<std::chrono::milliseconds>(now - last_update) > interval;
 }
 
+void Match::spawn_country(CountryId id, unsigned x, unsigned y) {
+    std::array<std::pair<unsigned, unsigned>, 9> coords = {
+        std::pair {x, y},
+        {x + 1, y},
+        {x, y + 1},
+        {x - 1, y},
+        {x, y - 1},
+        {x - 1, y - 1},
+        {x + 1, y - 1},
+        {x - 1, y + 1},
+        {x + 1, y + 1} 
+    };
+    for (auto &coord : coords) {
+        if (map.get_tile(coord.first, coord.second).owner != 0 ||
+            map.get_tile(coord.first, coord.second).type == MapTileType::Water)
+            continue;
+        map.set_tile(coord.first, coord.second, id);
+    }
+}
+
 std::vector<std::pair<unsigned, unsigned>> Match::tick() {
     std::vector<std::pair<unsigned, unsigned>> result;
     auto now = std::chrono::high_resolution_clock::now();

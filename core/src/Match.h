@@ -40,25 +40,7 @@ public:
         return countries.insert({ id, Country { id, name, is_player, color } }).first->second;
     }
 
-    void spawn_country(CountryId id, unsigned x, unsigned y) {
-        std::array<std::pair<unsigned, unsigned>, 9> coords = {
-            std::pair {x, y},
-            {x + 1, y},
-            {x, y + 1},
-            {x - 1, y},
-            {x, y - 1},
-            {x - 1, y - 1},
-            {x + 1, y - 1},
-            {x - 1, y + 1},
-            {x + 1, y + 1} 
-        };
-        for (auto &coord : coords) {
-            if (map.get_tile(coord.first, coord.second).owner != 0 ||
-                map.get_tile(coord.first, coord.second).type == MapTileType::Water)
-                continue;
-            map.set_tile(coord.first, coord.second, id);
-        }
-    }
+    void spawn_country(CountryId id, unsigned x, unsigned y);
     
     void new_alliance(CountryId id1, CountryId id2) {
         alliances[id1].push_back(id2);
