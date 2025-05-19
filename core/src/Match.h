@@ -3,6 +3,7 @@
 #include "Country.h"
 #include "Map.h"
 #include "Attack.h"
+#include <array>
 #include <map>
 #include <vector>
 #include <chrono>
@@ -37,6 +38,26 @@ public:
     const Country &new_country(std::string name, bool is_player, Color color) {
         CountryId id = countries.size();
         return countries.insert({ id, Country { id, name, is_player, color } }).first->second;
+    }
+
+    void spawn_country(CountryId id, unsigned x, unsigned y) {
+        std::array<std::pair<unsigned, unsigned>, 9> coords = {
+            std::pair {x, y},
+            {x + 1, y},
+            {x, y + 1},
+            {x - 1, y},
+            {x, y - 1},
+            {x - 1, y - 1},
+            {x + 1, y - 1},
+            {x - 1, y + 1},
+            {x + 1, y + 1} 
+        };
+        for (auto &coord : coords) {
+            if (map.get_tile(coord.first, coord.second).owner != 0 ||
+                map.get_tile(coord.first, coord.second).type == MapTileType::Water)
+                continue;
+            map.set_tile(coord.first, coord.second, id);
+        }
     }
     
     void new_alliance(CountryId id1, CountryId id2) {

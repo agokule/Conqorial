@@ -96,7 +96,7 @@ SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event) {
             // For example, only allow non-water tiles as starting positions.
             if (tile.type != MapTileType::Water) {
                 // Set the player's starting tile.
-                state.match.set_map_tile(tileX, tileY, state.player_country_id);
+                state.match.spawn_country(state.player_country_id, tileX, tileY);
                 // Re-create the texture so that the new ownership shows.
                 SDL_DestroyTexture(state.map_texture);
                 state.map_texture = init_map_texture(state.renderer, state.match);
