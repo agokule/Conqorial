@@ -18,11 +18,11 @@ std::set<std::pair<unsigned, unsigned>> Attack::advance(Map &map, std::map<Count
     CQ_LOG_DEBUG << "Troop cost per pixel: " << troop_cost_per_pixel << '\n';
     CQ_LOG_DEBUG << "Troops to attack: " << this->troops_to_attack << '\n';
 
-    unsigned pixels_to_capture {static_cast<unsigned int>(this->troops_to_attack / troop_cost_per_pixel)};
+    const unsigned pixels_to_capture {static_cast<unsigned int>(this->troops_to_attack / troop_cost_per_pixel)};
 
     // get border between this and other
     std::set<std::pair<unsigned, unsigned>> border;
-    int directions[4][2] = { {1,0}, {-1,0}, {0,1}, {0,-1} };
+    constexpr int directions[4][2] = { {1,0}, {-1,0}, {0,1}, {0,-1} };
 
     if (this->current_boder.empty()) {
         // no cached border, do a full check over the entire map
