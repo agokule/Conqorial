@@ -67,7 +67,6 @@ void PopulationPyramid::tick(unsigned economy, unsigned density, unsigned urbani
         unsigned long to_kill_male {};
         unsigned long to_kill_female {};
         double percentage_to_kill {piece.get_death_rate(life_expectancy)};
-        std::cout << "\t" << percentage_to_kill << " % of " << (short)piece.age << " population will die in one month" << std::endl;
         to_kill_male = piece.male_count * percentage_to_kill;
         to_kill_female = piece.female_count * percentage_to_kill;
         piece.male_count -= to_kill_male + (to_kill_male / 50); // men are more likely to die
