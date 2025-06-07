@@ -60,8 +60,11 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
 /* This function runs when a new event (mouse input, keypresses, etc) occurs. */
 SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event) {
     PROFILE_SECTION("SDL_AppEvent");
-    if (ImGui_ImplSDL3_ProcessEvent(event))
-        return SDL_APP_CONTINUE;
+
+    ImGui_ImplSDL3_ProcessEvent(event);
+    if (ImGui::GetIO().WantCaptureMouse) return SDL_APP_CONTINUE;
+    if (ImGui::GetIO().WantCaptureKeyboard) return SDL_APP_CONTINUE;
+
     AppState &state = *static_cast<AppState *>(appstate);
     if (event->type == SDL_EVENT_QUIT) {
         return SDL_APP_SUCCESS;  /* end the program, reporting success to the OS. */
