@@ -1,7 +1,6 @@
 #include "ClientMap.h"
 #include "GameState.h"
 #include "SDL3/SDL_init.h"
-#include "typedefs.h"
 #include <sys/stat.h>
 #define SDL_MAIN_USE_CALLBACKS
 #include <SDL3/SDL.h>
@@ -17,16 +16,7 @@
 #include "AppState.h"
 #include "Profiler.h"
 #include "Map.h"
-
-// Country id is the index of the country in the match
-// to show the pyramid for
-void show_population_pyramid_renderer(AppState &state, CountryId country_id) {
-    const Country &country = state.match.get_country(country_id);
-    if (&country.get_pyramid() != state.pyramid_renderer.get_pyramid())
-        state.pyramid_renderer.set_pyramid(country);
-
-    state.pyramid_renderer.render(country.get_urbanization_level());
-}
+#include "cq_ui.h"
 
 /* This function runs once at startup. */
 SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
