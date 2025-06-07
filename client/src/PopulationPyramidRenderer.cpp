@@ -106,8 +106,6 @@ void PopulationPyramidRenderer::render_population_trend() {
 }
 
 void PopulationPyramidRenderer::render_controls(int urbanization_param) {
-    ImGui::Begin("Population Simulation Controls");
-    
     ImGui::Text("Month: %d", current_month);
 
     economy_param = economy.score;
@@ -122,14 +120,12 @@ void PopulationPyramidRenderer::render_controls(int urbanization_param) {
     ImGui::Separator();
     ImGui::Text("Current Statistics:");
     ImGui::Text("Total Population: %u", pyramid->get_total_population());
-    
-    ImGui::End();
 }
 
 void PopulationPyramidRenderer::render(int urbanization_param) {
-    render_controls(urbanization_param);
     
     ImGui::Begin("Population Pyramid Visualization");
+    render_controls(urbanization_param);
     render_pyramid_chart();
     render_population_trend();
     ImGui::End();
