@@ -67,7 +67,13 @@ std::vector<std::pair<unsigned, unsigned>> Match::update_attacks() {
     return tiles_changed;
 }
 
-void Match::update_populations() { }
+void Match::update_populations() {
+    for (auto &[id, country] : countries) {
+        auto economy = PyramidUtils::get_economy_score(country.pyramid, country.id);
+        country.pyramid.tick(economy.score, 1000'000, country.urbanization_level);
+    }
+}
+
 void Match::update_economies() { }
 void Match::update_ai_decisions() { }
 

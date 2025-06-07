@@ -3,7 +3,6 @@
 #include "Country.h"
 #include "Map.h"
 #include "Attack.h"
-#include <array>
 #include <map>
 #include <vector>
 #include <chrono>

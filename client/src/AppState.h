@@ -11,6 +11,7 @@
 #include "typedefs.h"
 #include "utils.h"
 #include "Match.h"
+#include "PopulationPyramidRenderer.h"
 
 struct AppState {
     SDL_Window *window = nullptr;
@@ -33,12 +34,14 @@ struct AppState {
     std::vector<std::function<bool()>> callback_functions;
     Match match;
 
+    PopulationPyramidRenderer pyramid_renderer;
+
     AppState(const Map &map)
         : window(nullptr), renderer(nullptr), map_texture(nullptr),
           color({ 0, 0, 0, 255 }), last_frame_time {SDL_GetTicks()},
           region_cache {},
           dst_map_to_display({ 0, 0, (float)map.get_width(), (float)map.get_height()}),
-          match {map.get_width(), map.get_height()}
+          match {map.get_width(), map.get_height()}, pyramid_renderer {}
           {
         player_country_id = match.new_country("Player", true, {0,0,0,0}).get_id();
     };

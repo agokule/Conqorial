@@ -3,7 +3,7 @@
 #include "SDL3/SDL_events.h"
 #include "SDL3/SDL_render.h"
 #include "SDL3/SDL_video.h"
-#include <cstdint>
+#include "typedefs.h"
 #include <sys/stat.h>
 #define SDL_MAIN_USE_CALLBACKS
 #include <SDL3/SDL.h>
@@ -19,6 +19,16 @@
 #include "AppState.h"
 #include "Profiler.h"
 #include "Map.h"
+
+// Country id is the index of the country in the match
+// to show the pyramid for
+void show_population_pyramid_renderer(AppState &state, CountryId country_id) {
+    const Country &country = state.match.get_country(country_id);
+    if (&country.get_pyramid() != state.pyramid_renderer.get_pyramid())
+        state.pyramid_renderer.set_pyramid(country);
+
+    state.pyramid_renderer.render(country.get_urbanization_level());
+}
 
 /* This function runs once at startup. */
 SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
@@ -162,6 +172,13 @@ SDL_AppResult SDL_AppIterate(void *appstate) {
     ImGui::Text("Frame time: %llu", frame_time);
     ImGui::Text("FPS: %.2f", ImGui::GetIO().Framerate);
 
+    static bool population_pyramid = false;
+    ImGui::Checkbox("Show Population Pyramid", &population_pyramid);
+
+    if (population_pyramid) {
+        show_population_pyramid_renderer(state, state.player_country_id);
+    }
+
     state.frame_rates.AddPoint(SDL_GetTicks(), ImGui::GetIO().Framerate);
 
     if (ImPlot::BeginPlot("##Frame Rate Details", ImVec2(-1, 100), ImPlotFlags_NoLegend)) {
@@ -214,3 +231,4 @@ void SDL_AppQuit(void *appstate, SDL_AppResult result) {
     SDL_DestroyWindow(state->window);
     delete state;
 }
+
