@@ -1,6 +1,5 @@
 #include "cq_ui.h"
 
-
 // Country id is the index of the country in the match
 // to show the pyramid for
 void show_population_pyramid_renderer(AppState &state, CountryId country_id) {

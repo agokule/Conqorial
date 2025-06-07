@@ -3,7 +3,6 @@
 #include <functional>
 #include <vector>
 #include "NameRendering.h"
-#include "GameState.h"
 #include "Country.h"
 #include "SDL3/SDL_render.h"
 #include "imgui.h"
@@ -33,13 +32,14 @@ struct AppState {
     Match match;
 
     PopulationPyramidRenderer pyramid_renderer;
+    bool profiler_enabled;
 
     AppState(const Map &map)
         : window(nullptr), renderer(nullptr), map_texture(nullptr),
           color({ 0, 0, 0, 255 }), last_frame_time {SDL_GetTicks()},
           region_cache {},
           dst_map_to_display({ 0, 0, (float)map.get_width(), (float)map.get_height()}),
-          match {map.get_width(), map.get_height()}, pyramid_renderer {}
+          match {map.get_width(), map.get_height()}, pyramid_renderer {}, profiler_enabled(true)
           {
         player_country_id = match.new_country("Player", true, {0,0,0,0}).get_id();
     };

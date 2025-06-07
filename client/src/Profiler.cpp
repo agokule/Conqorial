@@ -116,11 +116,6 @@ void Profiler::render_ui() {
         }
         ImGui::SameLine();
         
-        bool is_enabled = enabled;
-        if (ImGui::Checkbox("Enabled", &is_enabled)) {
-            enable(is_enabled);
-        }
-        
         ImGui::SliderFloat("History (seconds)", &history_duration, 1.0f, 30.0f);
         ImGui::SliderFloat("Graph Height", &graph_height, 100.0f, 400.0f);
         

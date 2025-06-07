@@ -164,6 +164,9 @@ SDL_AppResult SDL_AppIterate(void *appstate) {
     ImGui::Text("Frame time: %llu", frame_time);
     ImGui::Text("FPS: %.2f", ImGui::GetIO().Framerate);
 
+    ImGui::Checkbox("Profiler Enabled", &state.profiler_enabled);
+    Profiler::instance().enable(state.profiler_enabled);
+
     static bool population_pyramid = false;
     ImGui::Checkbox("Show Population Pyramid", &population_pyramid);
 
