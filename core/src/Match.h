@@ -6,6 +6,7 @@
 #include <map>
 #include <vector>
 #include <chrono>
+#include "GameState.h"
 
 // CE stands for constexpr
 constexpr std::chrono::milliseconds attack_update_intervalCE { 50 };
@@ -14,6 +15,7 @@ constexpr std::chrono::milliseconds ai_update_intervalCE { 500 };
 constexpr std::chrono::milliseconds economy_update_intervalCE { 1000 };
 
 class Match {
+    GameState game_state = GameState::SelectingStartingPoint;
     std::map<CountryId, Country> countries;
     Map map;
     std::map<CountryId, std::vector<CountryId>> alliances;
@@ -40,6 +42,9 @@ public:
     }
 
     void spawn_country(CountryId id, unsigned x, unsigned y);
+
+    void set_game_started() { game_state = GameState::InGame; }
+    GameState get_game_state() const { return game_state; }
     
     void new_alliance(CountryId id1, CountryId id2) {
         alliances[id1].push_back(id2);

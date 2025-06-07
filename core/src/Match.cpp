@@ -28,6 +28,10 @@ void Match::spawn_country(CountryId id, unsigned x, unsigned y) {
 }
 
 std::vector<std::pair<unsigned, unsigned>> Match::tick() {
+    if (game_state != GameState::InGame)
+        return {};
+
+
     std::vector<std::pair<unsigned, unsigned>> result;
     auto now = std::chrono::high_resolution_clock::now();
     if (check_time_to_update(last_attack_update, attack_update_intervalCE)) {

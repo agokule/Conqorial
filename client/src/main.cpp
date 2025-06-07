@@ -1,8 +1,6 @@
 #include "ClientMap.h"
 #include "GameState.h"
-#include "SDL3/SDL_events.h"
-#include "SDL3/SDL_render.h"
-#include "SDL3/SDL_video.h"
+#include "SDL3/SDL_init.h"
 #include "typedefs.h"
 #include <sys/stat.h>
 #define SDL_MAIN_USE_CALLBACKS
@@ -103,7 +101,7 @@ SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event) {
 
         MapTile tile = state.match.get_map().get_tile(tileX, tileY);
 
-        if (state.game_state == GameState::SelectingStartingPoint) {
+        if (state.match.get_game_state() == GameState::SelectingStartingPoint) {
             // For example, only allow non-water tiles as starting positions.
             if (tile.type != MapTileType::Water) {
                 // Set the player's starting tile.
@@ -113,9 +111,9 @@ SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event) {
                 state.map_texture = init_map_texture(state.renderer, state.match);
                 SDL_SetTextureScaleMode(state.map_texture, SDL_SCALEMODE_NEAREST);
                 // Transition to the in-game state.
-                state.game_state = GameState::InGame;
+                state.match.set_game_started();
             }
-        } else if (state.game_state == GameState::InGame) {
+        } else if (state.match.get_game_state() == GameState::InGame) {
             // If the tile is not already owned by the player, check for an adjacent tile owned by the player.
             if (tile.owner != state.player_country_id)
                 state.match.attack(state.player_country_id, tile.owner, 10000, tileX, tileY);

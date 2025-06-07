@@ -27,8 +27,6 @@ struct AppState {
 
     SDL_FRect dst_map_to_display;
 
-    // New fields for game state and player country.
-    GameState game_state = GameState::SelectingStartingPoint;
     CountryId player_country_id;
 
     std::vector<std::function<bool()>> callback_functions;
