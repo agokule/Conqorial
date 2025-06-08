@@ -10,7 +10,7 @@ struct Attack {
     CountryId attacker;
     CountryId defender;
     unsigned troops_to_attack;
-    std::set<std::pair<unsigned, unsigned>> current_boder;
+    std::set<std::pair<TileCoor, TileCoor>> current_boder;
 
     Attack(CountryId attacker, CountryId defender, unsigned troops_to_attack) :
         attacker {attacker},
@@ -19,7 +19,7 @@ struct Attack {
         current_boder {}
     {}
 
-    std::set<std::pair<unsigned, unsigned>> advance(Map &map, std::map<CountryId, Country> &countries);
+    std::set<std::pair<TileCoor, TileCoor>> advance(Map &map, std::map<CountryId, Country> &countries);
 };
 
 #endif

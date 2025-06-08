@@ -27,7 +27,7 @@ class Match {
     std::chrono::time_point<std::chrono::high_resolution_clock> last_economy_update;
 
     void update_populations();
-    std::vector<std::pair<unsigned, unsigned>> update_attacks();
+    std::vector<std::pair<TileCoor, TileCoor>> update_attacks();
     void update_ai_decisions();
     void update_economies();
 public:
@@ -40,8 +40,7 @@ public:
         CountryId id = countries.size();
         return countries.insert({ id, Country { id, name, is_player, color } }).first->second;
     }
-
-    void spawn_country(CountryId id, unsigned x, unsigned y);
+    void spawn_country(CountryId id, TileCoor x, TileCoor y);
 
     void set_game_started() { game_state = GameState::InGame; }
     GameState get_game_state() const { return game_state; }
@@ -60,5 +59,5 @@ public:
 
     // updates the state of the game, should be called every frame or as often as possible
     // returns a list of tiles that have changed
-    std::vector<std::pair<unsigned, unsigned>> tick();
+    std::vector<std::pair<TileCoor, TileCoor>> tick();
 };

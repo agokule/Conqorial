@@ -10,4 +10,7 @@ typedef double Elevation;
 // If it is 0, it means no player/ai
 typedef uint8_t CountryId;
 
+typedef uint16_t TileCoor;
+typedef uint32_t TileIndex;
+
 #endif // PLAYERID_H

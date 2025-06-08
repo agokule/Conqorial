@@ -1,14 +1,15 @@
 #include "Match.h"
 #include "optional"
 #include "Logging.h"
+#include "typedefs.h"
 
 bool check_time_to_update(std::chrono::time_point<std::chrono::high_resolution_clock> last_update, std::chrono::milliseconds interval) {
     auto now = std::chrono::high_resolution_clock::now();
     return std::chrono::duration_cast<std::chrono::milliseconds>(now - last_update) > interval;
 }
 
-void Match::spawn_country(CountryId id, unsigned x, unsigned y) {
-    std::array<std::pair<unsigned, unsigned>, 9> coords = {
+void Match::spawn_country(CountryId id, TileCoor x, TileCoor y) {
+    std::array<std::pair<TileCoor, TileCoor>, 9> coords = {
         std::pair {x, y},
         {x + 1, y},
         {x, y + 1},
@@ -27,12 +28,12 @@ void Match::spawn_country(CountryId id, unsigned x, unsigned y) {
     }
 }
 
-std::vector<std::pair<unsigned, unsigned>> Match::tick() {
+std::vector<std::pair<TileCoor, TileCoor>> Match::tick() {
     if (game_state != GameState::InGame)
         return {};
 
 
-    std::vector<std::pair<unsigned, unsigned>> result;
+    std::vector<std::pair<TileCoor, TileCoor>> result;
     auto now = std::chrono::high_resolution_clock::now();
     if (check_time_to_update(last_attack_update, attack_update_intervalCE)) {
         last_attack_update = now;
@@ -55,8 +56,8 @@ std::vector<std::pair<unsigned, unsigned>> Match::tick() {
     return result;
 }
 
-std::vector<std::pair<unsigned, unsigned>> Match::update_attacks() {
-    std::vector<std::pair<unsigned, unsigned>> tiles_changed;
+std::vector<std::pair<TileCoor, TileCoor>> Match::update_attacks() {
+    std::vector<std::pair<TileCoor, TileCoor>> tiles_changed;
     for (auto &[attacker, attacks] : on_going_attacks) {
         for (auto it = attacks.begin(); it != attacks.end(); it++) {
             auto tiles_changed_this_attack = it->second.advance(map, countries);

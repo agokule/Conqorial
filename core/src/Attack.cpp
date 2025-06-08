@@ -1,8 +1,9 @@
 #include "Attack.h"
 #include "Logging.h"
+#include "typedefs.h"
 #include <optional>
 
-std::set<std::pair<unsigned, unsigned>> Attack::advance(Map &map, std::map<CountryId, Country> &countries) {
+std::set<std::pair<TileCoor, TileCoor>> Attack::advance(Map &map, std::map<CountryId, Country> &countries) {
     double troop_cost_per_pixel = 1.0;
 
     std::optional<Country> defender {};
@@ -21,7 +22,7 @@ std::set<std::pair<unsigned, unsigned>> Attack::advance(Map &map, std::map<Count
     const unsigned pixels_to_capture {static_cast<unsigned int>(this->troops_to_attack / troop_cost_per_pixel)};
 
     // get border between this and other
-    std::set<std::pair<unsigned, unsigned>> border;
+    std::set<std::pair<TileCoor, TileCoor>> border;
     constexpr int directions[4][2] = { {1,0}, {-1,0}, {0,1}, {0,-1} };
 
     if (this->current_boder.empty()) {

@@ -97,7 +97,7 @@ void zoom_map(float zoom_factor, float center_x, float center_y, AppState &state
     state.dst_map_to_display.y = center_y - offsetY * zoom_factor;
 }
 
-void sync_map_texture(SDL_Texture *texture, const Match &match, const std::vector<std::pair<unsigned, unsigned>> &tiles_to_update) {
+void sync_map_texture(SDL_Texture *texture, const Match &match, const std::vector<std::pair<TileCoor, TileCoor>> &tiles_to_update) {
     if (!tiles_to_update.empty()) {
         uint8_t *pixels = nullptr;
         int pitch = 0;
