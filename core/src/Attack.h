@@ -19,7 +19,7 @@ struct Attack {
         current_boder {}
     {}
 
-    std::set<std::pair<TileCoor, TileCoor>> advance(Map &map, std::map<CountryId, Country> &countries);
+    std::set<std::pair<TileCoor, TileCoor>> advance(Map &map, std::map<CountryId, Country> &countries, std::map<CountryId, std::set<TileIndex>> &tiles_owned_by_country);
 };
 
 #endif

@@ -1,12 +1,14 @@
 #pragma once
 
 #include "Country.h"
+#include "Logging.h"
 #include "Map.h"
 #include "Attack.h"
 #include <map>
 #include <vector>
 #include <chrono>
 #include "GameState.h"
+#include "typedefs.h"
 
 // CE stands for constexpr
 constexpr std::chrono::milliseconds attack_update_intervalCE { 50 };
@@ -17,6 +19,7 @@ constexpr std::chrono::milliseconds economy_update_intervalCE { 1000 };
 class Match {
     GameState game_state = GameState::SelectingStartingPoint;
     std::map<CountryId, Country> countries;
+    std::map<CountryId, std::set<TileIndex>> tiles_owned_by_country;
     Map map;
     std::map<CountryId, std::vector<CountryId>> alliances;
     std::map<CountryId, std::map<CountryId, Attack>> on_going_attacks;
@@ -33,11 +36,13 @@ class Match {
 public:
     Match(unsigned width, unsigned height): countries {}, map {width, height} {
         countries[0] = { 0, "Neutral", false, {0, 0, 0, 0} };
+        tiles_owned_by_country[0] = {};
     }
 
     const Country &get_country(CountryId id) const { return countries.at(id); }
     const Country &new_country(std::string name, bool is_player, Color color) {
         CountryId id = countries.size();
+        tiles_owned_by_country[id] = {};
         return countries.insert({ id, Country { id, name, is_player, color } }).first->second;
     }
     void spawn_country(CountryId id, TileCoor x, TileCoor y);
@@ -50,10 +55,11 @@ public:
         alliances[id2].push_back(id1);
     }
 
-    void attack(CountryId attacker, CountryId defender_id, unsigned troops_to_attack, unsigned tile_x, unsigned tile_y);
+    void attack(CountryId attacker, CountryId defender_id, unsigned troops_to_attack, TileCoor tile_x, TileCoor tile_y);
 
     const Map &get_map() const { return map; }
-    void set_map_tile(unsigned x, unsigned y, CountryId owner) { map.set_tile(x, y, owner); }
+    void set_map_tile(TileCoor x, TileCoor y, CountryId owner);
+    void set_map_tile(std::pair<TileCoor, TileCoor> pos, CountryId owner) { set_map_tile(pos.first, pos.second, owner); }
 
     const std::map<CountryId, Country> &get_countries() const { return countries; }
 

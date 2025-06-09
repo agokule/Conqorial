@@ -21,10 +21,10 @@ void Match::spawn_country(CountryId id, TileCoor x, TileCoor y) {
         {x + 1, y + 1} 
     };
     for (auto &coord : coords) {
-        if (map.get_tile(coord.first, coord.second).owner != 0 ||
-            map.get_tile(coord.first, coord.second).type == MapTileType::Water)
+        if (map.get_tile(coord).owner != 0 ||
+            map.get_tile(coord).type == MapTileType::Water)
             continue;
-        map.set_tile(coord.first, coord.second, id);
+        set_map_tile(coord, id);
     }
 }
 
@@ -59,8 +59,8 @@ std::vector<std::pair<TileCoor, TileCoor>> Match::tick() {
 std::vector<std::pair<TileCoor, TileCoor>> Match::update_attacks() {
     std::vector<std::pair<TileCoor, TileCoor>> tiles_changed;
     for (auto &[attacker, attacks] : on_going_attacks) {
-        for (auto it = attacks.begin(); it != attacks.end(); it++) {
-            auto tiles_changed_this_attack = it->second.advance(map, countries);
+        for (auto it = attacks.begin(); it != attacks.end(); ++it) {
+            auto tiles_changed_this_attack = it->second.advance(map, countries, tiles_owned_by_country);
             if (tiles_changed_this_attack.empty()) {
                 it = attacks.erase(it);
                 if (attacks.empty())
@@ -82,7 +82,7 @@ void Match::update_populations() {
 void Match::update_economies() { }
 void Match::update_ai_decisions() { }
 
-void Match::attack(CountryId attacker, CountryId defender_id, unsigned troops_to_attack, unsigned tile_x, unsigned tile_y) {
+void Match::attack(CountryId attacker, CountryId defender_id, unsigned troops_to_attack, TileCoor tile_x, TileCoor tile_y) {
     bool able_to_attack = get_country(attacker).can_attack(defender_id, {tile_x, tile_y}, map);
 
     CQ_LOG_DEBUG << "Can attack: " << able_to_attack << "\n";
@@ -109,3 +109,11 @@ void Match::attack(CountryId attacker, CountryId defender_id, unsigned troops_to
     );
 }
 
+void Match::set_map_tile(TileCoor x, TileCoor y, CountryId owner) {
+    TileIndex index = map.get_tile_index(x, y);
+    tiles_owned_by_country[owner].insert(index);
+    auto removed = tiles_owned_by_country[map.get_tile(x, y).owner].erase(index);
+    CONQORIAL_ASSERT_ALL(removed != 0, "The country which owns the tile does not have it in their tiles_owned_by_country set");
+    CONQORIAL_ASSERT_ALL(removed == 1, "The country which owns the tile potentially has more than one tile in their tiles_owned_by_country set");
+    map.set_tile(x, y, owner);
+}
