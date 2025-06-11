@@ -3,7 +3,7 @@
 #include "PopulationPyramid.h"
 #include "implot.h"
 
-PopulationPyramidRenderer::PopulationPyramidRenderer(): pyramid {nullptr} {
+PopulationPyramidRenderer::PopulationPyramidRenderer(): country {nullptr} {
     // Initialize history with current state
     record_current_state();
 }
@@ -15,7 +15,7 @@ void PopulationPyramidRenderer::record_current_state() {
     
     // Access pyramid data (you'll need to add a getter method to PopulationPyramid)
     // For now, we'll simulate this - you should add a getter method
-    const auto& pieces = pyramid->get_pieces();
+    const auto& pieces = country->pyramid.get_pieces();
     for (int i = 0; i < 20; ++i) {
         males[i] = pieces[i].male_count;
         females[i] = pieces[i].female_count;
@@ -61,7 +61,7 @@ void PopulationPyramidRenderer::render_pyramid_chart() {
         
         // Get current data (replace with actual pyramid data when available)
         for (int i = 0; i < 20; ++i) {
-            const auto& pieces = pyramid->get_pieces();
+            const auto& pieces = country->pyramid.get_pieces();
             population_data[i] = -static_cast<int>(pieces[i].male_count);      // Males (negative)
             population_data[i + 20] = static_cast<int>(pieces[i].female_count); // Females (positive)
         }
@@ -108,7 +108,9 @@ void PopulationPyramidRenderer::render_population_trend() {
 void PopulationPyramidRenderer::render_controls(int urbanization_param) {
     ImGui::Text("Month: %d", current_month);
 
-    economy_param = economy.score;
+
+    economy_param = country->get_economy();
+    density_param = country->get_density();
     
     ImGui::SliderInt("Economy", &economy_param, 0, 200, "%d", ImGuiSliderFlags_NoInput);
     ImGui::SliderInt("Density", &density_param, 0, 100'000);
@@ -119,7 +121,7 @@ void PopulationPyramidRenderer::render_controls(int urbanization_param) {
     // Display current statistics
     ImGui::Separator();
     ImGui::Text("Current Statistics:");
-    ImGui::Text("Total Population: %u", pyramid->get_total_population());
+    ImGui::Text("Total Population: %u", country->pyramid.get_total_population());
 }
 
 void PopulationPyramidRenderer::render(int urbanization_param) {
@@ -132,7 +134,7 @@ void PopulationPyramidRenderer::render(int urbanization_param) {
 }
 
 void PopulationPyramidRenderer::set_pyramid(const Country &country) {
-    this->pyramid = &country.pyramid;
+    this->country = &country;
     current_month = 0;
     male_history.clear();
     female_history.clear();
@@ -140,5 +142,9 @@ void PopulationPyramidRenderer::set_pyramid(const Country &country) {
     birth_history.clear();
     birth_rate_history.clear();
     life_expectancy_history.clear();
+}
+
+const PopulationPyramid &PopulationPyramidRenderer::get_pyramid() const {
+    return country->pyramid;
 }
 

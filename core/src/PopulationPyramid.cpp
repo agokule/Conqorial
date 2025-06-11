@@ -77,6 +77,7 @@ void PopulationPyramid::tick(unsigned economy, unsigned density, unsigned urbani
     CQ_LOG_DEBUG << "Birth rate: " << birth_rate << '\n';
 
     double life_expectancy {75 - ((double)density / max_density) + (economy * 0.1)};
+    CQ_LOG_DEBUG << "Density: " << density << '\n';
     CQ_LOG_DEBUG << "Life expectancy: " << life_expectancy << '\n';
 
     // kill some people

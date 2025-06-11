@@ -55,6 +55,22 @@ const PopulationPyramid &Country::get_pyramid() const {
     return pyramid;
 }
 
+unsigned Country::get_economy() const {
+    return last_economy;
+}
+
+unsigned Country::get_density() const {
+    return last_density;
+}
+
+void Country::set_economy(unsigned economy) {
+    last_economy = economy;
+}
+
+void Country::set_density(unsigned density) {
+    last_density = density;
+}
+
 unsigned Country::get_urbanization_level() const {
     return urbanization_level;
 }

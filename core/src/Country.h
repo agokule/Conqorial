@@ -24,6 +24,8 @@ class Country {
     unsigned urbanization_level = 1;
     PopulationPyramid pyramid;
     unsigned money = 0;
+    unsigned last_economy = 0;
+    unsigned last_density = 0;
 public:
     Country(CountryId id, std::string name, bool is_human, Color color) : id {id}, name {name}, is_human {is_human}, color {color} {}
     Country() : Country(0, "", false, {0, 0, 0, 0}) { std::cerr << "Warning: Created default country\n"; }
@@ -36,6 +38,12 @@ public:
     Color get_color() const;
     CountryId get_id() const;
     const PopulationPyramid &get_pyramid() const;
+    
+    // These are for the visualizer
+    unsigned get_economy() const;
+    unsigned get_density() const;
+    void set_economy(unsigned economy);
+    void set_density(unsigned density);
 
     unsigned get_urbanization_level() const;
     unsigned upgrade_urbanization_level();

@@ -5,8 +5,9 @@
 
 class PopulationPyramidRenderer {
 private:
-    // A reference for the pyramid to display
-    const PopulationPyramid *pyramid;
+    // A reference for the country whoose population pyramid to display
+    const Country *country;
+
     int current_month = 0;
     int economy_param = 100;
     int density_param = 100;
@@ -31,6 +32,6 @@ public:
     void render(int urbanization_param);
     void set_pyramid(const Country &country);
 
-    const PopulationPyramid *get_pyramid() const { return pyramid; }
+    const PopulationPyramid &get_pyramid() const;
 };
 

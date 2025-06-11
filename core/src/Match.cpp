@@ -103,8 +103,16 @@ std::vector<std::pair<TileCoor, TileCoor>> Match::update_attacks() {
 
 void Match::update_populations() {
     for (auto &[id, country] : countries) {
+        auto number_tiles = tiles_owned_by_country[id].size();
+        if (number_tiles == 0)
+            continue;
+        auto current_population = country.pyramid.get_total_population();
         auto economy = PyramidUtils::get_economy_score(country.pyramid, country.id);
-        country.pyramid.tick(economy.score, 1000'000, country.urbanization_level);
+
+        country.set_economy(economy.score);
+        country.set_density(current_population / number_tiles);
+        country.add_money(economy.money_made);
+        country.pyramid.tick(economy.score, current_population / number_tiles, country.urbanization_level);
     }
 }
 
