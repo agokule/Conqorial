@@ -31,7 +31,7 @@ public:
 
     double calculate_birth_rate(double density, unsigned max_density, unsigned economic_score) const;
 
-    const std::array<PyramidPiece, 20> &getPieces() const;
+    const std::array<PyramidPiece, 20> &get_pieces() const;
 
     void update_total_population();
 };

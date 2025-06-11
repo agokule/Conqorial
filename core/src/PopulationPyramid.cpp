@@ -98,7 +98,7 @@ unsigned PopulationPyramid::get_total_population() const {
     return total_population;
 }
 
-const std::array<PyramidPiece, 20> &PopulationPyramid::getPieces() const {
+const std::array<PyramidPiece, 20> &PopulationPyramid::get_pieces() const {
     return pieces;
 }
 
@@ -117,7 +117,7 @@ EconomyResult get_economy_score(const PopulationPyramid &pyramid, CountryId coun
 
     unsigned long money_producing_people {}, money_unproducing_people {};
 
-    for (const auto &piece : pyramid.getPieces()) {
+    for (const auto &piece : pyramid.get_pieces()) {
         if (piece.age >= money_producing_age_min && piece.age < money_producing_age_max) {
             money_producing_people += piece.male_count + piece.female_count;
             continue;

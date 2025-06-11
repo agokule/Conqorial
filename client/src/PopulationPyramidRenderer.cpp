@@ -15,7 +15,7 @@ void PopulationPyramidRenderer::record_current_state() {
     
     // Access pyramid data (you'll need to add a getter method to PopulationPyramid)
     // For now, we'll simulate this - you should add a getter method
-    const auto& pieces = pyramid->getPieces();
+    const auto& pieces = pyramid->get_pieces();
     for (int i = 0; i < 20; ++i) {
         males[i] = pieces[i].male_count;
         females[i] = pieces[i].female_count;
@@ -61,7 +61,7 @@ void PopulationPyramidRenderer::render_pyramid_chart() {
         
         // Get current data (replace with actual pyramid data when available)
         for (int i = 0; i < 20; ++i) {
-            const auto& pieces = pyramid->getPieces();
+            const auto& pieces = pyramid->get_pieces();
             population_data[i] = -static_cast<int>(pieces[i].male_count);      // Males (negative)
             population_data[i + 20] = static_cast<int>(pieces[i].female_count); // Females (positive)
         }
