@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Country.h"
-#include "Logging.h"
 #include "Map.h"
 #include "Attack.h"
 #include <map>
@@ -34,34 +33,24 @@ class Match {
     void update_ai_decisions();
     void update_economies();
 public:
-    Match(unsigned width, unsigned height): countries {}, map {width, height} {
-        countries[0] = { 0, "Neutral", false, {0, 0, 0, 0} };
-        tiles_owned_by_country[0] = {};
-    }
+    Match(unsigned width, unsigned height);
 
-    const Country &get_country(CountryId id) const { return countries.at(id); }
-    const Country &new_country(std::string name, bool is_player, Color color) {
-        CountryId id = countries.size();
-        tiles_owned_by_country[id] = {};
-        return countries.insert({ id, Country { id, name, is_player, color } }).first->second;
-    }
+    const Country &get_country(CountryId id) const;
+    const Country &new_country(std::string name, bool is_player, Color color);
     void spawn_country(CountryId id, TileCoor x, TileCoor y);
 
-    void set_game_started() { game_state = GameState::InGame; }
-    GameState get_game_state() const { return game_state; }
+    void set_game_started();
+    GameState get_game_state() const;
     
-    void new_alliance(CountryId id1, CountryId id2) {
-        alliances[id1].push_back(id2);
-        alliances[id2].push_back(id1);
-    }
+    void new_alliance(CountryId id1, CountryId id2);
 
     void attack(CountryId attacker, CountryId defender_id, unsigned troops_to_attack, TileCoor tile_x, TileCoor tile_y);
 
-    const Map &get_map() const { return map; }
+    const Map &get_map() const;
     void set_map_tile(TileCoor x, TileCoor y, CountryId owner);
-    void set_map_tile(std::pair<TileCoor, TileCoor> pos, CountryId owner) { set_map_tile(pos.first, pos.second, owner); }
+    void set_map_tile(std::pair<TileCoor, TileCoor> pos, CountryId owner);
 
-    const std::map<CountryId, Country> &get_countries() const { return countries; }
+    const std::map<CountryId, Country> &get_countries() const;
 
     // updates the state of the game, should be called every frame or as often as possible
     // returns a list of tiles that have changed

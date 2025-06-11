@@ -54,3 +54,23 @@ MapTile Map::get_tile(std::pair<unsigned, unsigned> pos) const {
     return get_tile(pos.first, pos.second);
 }
 
+
+unsigned Map::get_width() const {
+    return width;
+}
+
+unsigned Map::get_height() const {
+    return height;
+}
+
+TileIndex Map::get_tile_index(TileCoor x, TileCoor y) const {
+    return y * width + x;
+}
+
+TileIndex Map::get_tile_index(std::pair<TileCoor, TileCoor> pos) const {
+    return get_tile_index(pos.first, pos.second);
+}
+
+std::pair<TileCoor, TileCoor> Map::get_tile_coors(TileIndex index) const {
+    return { index % width, index / width };
+}

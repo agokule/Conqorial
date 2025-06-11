@@ -4,7 +4,6 @@
 #include "Map.h"
 #include "color.h"
 #include "PopulationPyramid.h"
-#include "Logging.h"
 #include <iostream>
 #include <string>
 
@@ -30,22 +29,18 @@ public:
 
     bool can_attack(CountryId other_id, std::pair<unsigned, unsigned> pos, const Map &map) const;
 
-    unsigned get_troops() const { return troops; }
-    CountryId get_id() const { return id; }
-    std::string get_name() const { return name; }
-    bool get_is_human() const { return is_human; }
-    Color get_color() const { return color; }
-    const PopulationPyramid &get_pyramid() const { return pyramid; }
+    unsigned get_troops() const;
+    std::string get_name() const;
+    bool get_is_human() const;
+    Color get_color() const;
+    const PopulationPyramid &get_pyramid() const;
 
-    unsigned get_urbanization_level() const { return urbanization_level; }
-    unsigned upgrade_urbanization_level() { return ++urbanization_level; }
+    unsigned get_urbanization_level() const;
+    unsigned upgrade_urbanization_level();
 
-    unsigned get_money() const { return money; }
-    void add_money(unsigned amount) { money += amount; }
-    void remove_money(unsigned amount) {
-        CONQORIAL_ASSERT_ALL(amount <= money, "Tried to remove more money than owned", return;);
-        money -= amount;
-    }
+    unsigned get_money() const;
+    void add_money(unsigned amount);
+    void remove_money(unsigned amount);
 };
 
 #endif

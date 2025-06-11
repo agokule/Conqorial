@@ -8,6 +8,22 @@ bool check_time_to_update(std::chrono::time_point<std::chrono::high_resolution_c
     return std::chrono::duration_cast<std::chrono::milliseconds>(now - last_update) > interval;
 }
 
+
+Match::Match(unsigned width, unsigned height): countries {}, map {width, height} {
+    countries[0] = { 0, "Neutral", false, {0, 0, 0, 0} };
+    tiles_owned_by_country[0] = {};
+}
+
+const Country &Match::get_country(CountryId id) const {
+    return countries.at(id);
+}
+
+const Country &Match::new_country(std::string name, bool is_player, Color color) {
+    CountryId id = countries.size();
+    tiles_owned_by_country[id] = {};
+    return countries.insert({ id, Country { id, name, is_player, color } }).first->second;
+}
+
 void Match::spawn_country(CountryId id, TileCoor x, TileCoor y) {
     std::array<std::pair<TileCoor, TileCoor>, 9> coords = {
         std::pair {x, y},
@@ -26,6 +42,19 @@ void Match::spawn_country(CountryId id, TileCoor x, TileCoor y) {
             continue;
         set_map_tile(coord, id);
     }
+}
+
+void Match::set_game_started() {
+    game_state = GameState::InGame;
+}
+
+GameState Match::get_game_state() const {
+    return game_state;
+}
+
+void Match::new_alliance(CountryId id1, CountryId id2) {
+    alliances[id1].push_back(id2);
+    alliances[id2].push_back(id1);
 }
 
 std::vector<std::pair<TileCoor, TileCoor>> Match::tick() {
@@ -109,6 +138,11 @@ void Match::attack(CountryId attacker, CountryId defender_id, unsigned troops_to
     );
 }
 
+
+const Map &Match::get_map() const {
+    return map;
+}
+
 void Match::set_map_tile(TileCoor x, TileCoor y, CountryId owner) {
     TileIndex index = map.get_tile_index(x, y);
     tiles_owned_by_country[owner].insert(index);
@@ -116,4 +150,13 @@ void Match::set_map_tile(TileCoor x, TileCoor y, CountryId owner) {
     CONQORIAL_ASSERT_ALL(removed != 0, "The country which owns the tile does not have it in their tiles_owned_by_country set");
     CONQORIAL_ASSERT_ALL(removed == 1, "The country which owns the tile potentially has more than one tile in their tiles_owned_by_country set");
     map.set_tile(x, y, owner);
+}
+
+void Match::set_map_tile(std::pair<TileCoor, TileCoor> pos, CountryId owner) {
+    set_map_tile(pos.first, pos.second, owner);
+}
+
+
+const std::map<CountryId, Country> &Match::get_countries() const {
+    return countries;
 }

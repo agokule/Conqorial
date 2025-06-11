@@ -31,3 +31,43 @@ bool Country::can_attack(CountryId other_id, std::pair<unsigned, unsigned> pos, 
     return false;
 }
 
+unsigned Country::get_troops() const {
+    return troops;
+}
+
+std::string Country::get_name() const {
+    return name;
+}
+
+bool Country::get_is_human() const {
+    return is_human;
+};
+
+Color Country::get_color() const {
+    return color;
+}
+
+const PopulationPyramid &Country::get_pyramid() const {
+    return pyramid;
+}
+
+unsigned Country::get_urbanization_level() const {
+    return urbanization_level;
+}
+
+unsigned Country::upgrade_urbanization_level() {
+    return ++urbanization_level;
+}
+
+unsigned Country::get_money() const {
+    return money;
+}
+
+void Country::add_money(unsigned amount) {
+    money += amount;
+}
+
+void Country::remove_money(unsigned amount) {
+    CONQORIAL_ASSERT_ALL(amount <= money, "Tried to remove more money than owned", return;);
+    money -= amount;
+}

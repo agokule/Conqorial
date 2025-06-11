@@ -13,6 +13,24 @@ double sigmoid(double x) {
 const unsigned money_producing_age_min {20};
 const unsigned money_producing_age_max {60};
 
+double PyramidPiece::get_death_rate(double life_expectancy) const {
+    return (std::pow(tanh(age / life_expectancy) / 3, 2.5) + 0.001) / 3.5;
+}
+
+PopulationPyramid::PopulationPyramid() : pieces {}, total_population {}, months_passed {} {
+    unsigned pop = 1'000'000;
+    unsigned age = 0;
+    for (auto &piece : pieces) {
+        piece.age = age;
+        piece.male_count = pop;
+        piece.female_count = pop;
+
+        total_population += piece.male_count + piece.female_count;
+        age += 5;
+        pop /= 1.2;
+    }
+}
+
 
 double PopulationPyramid::calculate_birth_rate(double density, unsigned max_density, unsigned economic_score) const {
     return std::max((-((double)density * 5 / max_density) + (economic_score * 0.05) + 1), 0.1);
@@ -73,6 +91,23 @@ void PopulationPyramid::tick(unsigned economy, unsigned density, unsigned urbani
     }
 
     update_total_population();
+}
+
+
+unsigned PopulationPyramid::get_total_population() const {
+    return total_population;
+}
+
+const std::array<PyramidPiece, 20> &PopulationPyramid::getPieces() const {
+    return pieces;
+}
+
+
+void PopulationPyramid::update_total_population() {
+    total_population = 0;
+    for (const auto &piece : pieces) {
+        total_population += piece.male_count + piece.female_count;
+    }
 }
 
 namespace PyramidUtils {
