@@ -12,6 +12,8 @@ double sigmoid(double x) {
 
 const unsigned money_producing_age_min {20};
 const unsigned money_producing_age_max {60};
+const unsigned reproductive_age_min {20};
+const unsigned reproductive_age_max {55};
 
 double PyramidPiece::get_death_rate(double life_expectancy) const {
     return (std::pow(tanh(age / life_expectancy) / 3, 2.5) + 0.001) / 3.5;
@@ -56,11 +58,11 @@ void PopulationPyramid::tick(unsigned economy, unsigned density, unsigned urbani
     // babies born
     unsigned long reproductive_age_women {}, reproductive_age_men {};
     for (const auto &piece : pieces) {
-        if (piece.age <= 55 && piece.age >= 20) {
+        if (piece.age <= reproductive_age_max && piece.age >= reproductive_age_min) {
             reproductive_age_women += piece.female_count;
             reproductive_age_men += piece.male_count;
         }
-        if (piece.age > 55)
+        if (piece.age > reproductive_age_max)
             break;
     }
 
