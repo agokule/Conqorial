@@ -47,6 +47,10 @@ Color Country::get_color() const {
     return color;
 }
 
+CountryId Country::get_id() const {
+    return id;
+}
+
 const PopulationPyramid &Country::get_pyramid() const {
     return pyramid;
 }

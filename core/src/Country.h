@@ -4,6 +4,7 @@
 #include "Map.h"
 #include "color.h"
 #include "PopulationPyramid.h"
+#include "typedefs.h"
 #include <iostream>
 #include <string>
 
@@ -33,6 +34,7 @@ public:
     std::string get_name() const;
     bool get_is_human() const;
     Color get_color() const;
+    CountryId get_id() const;
     const PopulationPyramid &get_pyramid() const;
 
     unsigned get_urbanization_level() const;
