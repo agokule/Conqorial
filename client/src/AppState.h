@@ -1,5 +1,6 @@
 #pragma once
 #include <SDL3/SDL.h>
+#include <cstdint>
 #include <functional>
 #include <vector>
 #include "NameRendering.h"
@@ -27,6 +28,7 @@ struct AppState {
     SDL_FRect dst_map_to_display;
 
     CountryId player_country_id;
+    uint8_t player_target_mobilization;
 
     std::vector<std::function<bool()>> callback_functions;
     Match match;
@@ -37,8 +39,8 @@ struct AppState {
     AppState(const Map &map)
         : window(nullptr), renderer(nullptr), map_texture(nullptr),
           color({ 0, 0, 0, 255 }), last_frame_time {SDL_GetTicks()},
-          region_cache {},
-          dst_map_to_display({ 0, 0, (float)map.get_width(), (float)map.get_height()}),
+          region_cache {}, dst_map_to_display({ 0, 0, (float)map.get_width(), (float)map.get_height()}),
+          player_target_mobilization {2},
           match {map.get_width(), map.get_height()}, pyramid_renderer {}, profiler_enabled(true)
           {
         player_country_id = match.new_country("Player", true, {0,0,0,0}).get_id();

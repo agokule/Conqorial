@@ -113,6 +113,7 @@ void Match::update_populations() {
         country.set_density(current_population / number_tiles);
         country.add_money(economy.money_made);
         country.pyramid.tick(economy.score, current_population / number_tiles, country.urbanization_level);
+        country.calculate_troops();
     }
 }
 
@@ -164,6 +165,9 @@ void Match::set_map_tile(std::pair<TileCoor, TileCoor> pos, CountryId owner) {
     set_map_tile(pos.first, pos.second, owner);
 }
 
+void Match::set_country_target_mobilization_level(CountryId id, uint8_t level) {
+    countries.at(id).set_target_mobilization_level(level);
+}
 
 const std::map<CountryId, Country> &Match::get_countries() const {
     return countries;

@@ -38,9 +38,10 @@ unsigned Country::get_troops() const {
 
 void Country::calculate_troops() {
     troops = 0;
+    double target_mobilization_level_percent {target_mobilization_level / 100.0};
     for (const auto piece : pyramid.get_pieces()) {
         if (piece.age >= reproductive_age_min && piece.age <= reproductive_age_max)
-            troops += (piece.male_count + piece.female_count) * target_mobilization_level;
+            troops += (piece.male_count + piece.female_count) * target_mobilization_level_percent;
         if (piece.age > reproductive_age_max)
             break;
     }

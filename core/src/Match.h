@@ -50,6 +50,8 @@ public:
     void set_map_tile(TileCoor x, TileCoor y, CountryId owner);
     void set_map_tile(std::pair<TileCoor, TileCoor> pos, CountryId owner);
 
+    void set_country_target_mobilization_level(CountryId id, uint8_t level);
+
     const std::map<CountryId, Country> &get_countries() const;
 
     // updates the state of the game, should be called every frame or as often as possible

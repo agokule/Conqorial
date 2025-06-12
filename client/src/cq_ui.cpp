@@ -31,6 +31,14 @@ void draw_main_ui(AppState &state, unsigned long long frame_time) {
         show_population_pyramid_renderer(state, state.player_country_id);
     }
 
+    int player_target_mobilization = state.player_target_mobilization;
+    ImGui::SliderInt("Mobilization Percent", &player_target_mobilization, 1, 100);
+    state.player_target_mobilization = player_target_mobilization;
+    state.match.set_country_target_mobilization_level(state.player_country_id, state.player_target_mobilization);
+
+    ImGui::Text("Money: %d", state.match.get_country(state.player_country_id).get_money());
+    ImGui::Text("Troops: %d", state.match.get_country(state.player_country_id).get_troops());
+
     state.frame_rates.AddPoint(SDL_GetTicks(), ImGui::GetIO().Framerate);
 
     if (ImPlot::BeginPlot("##Frame Rate Details", ImVec2(-1, 100), ImPlotFlags_NoLegend)) {
