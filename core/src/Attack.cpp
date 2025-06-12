@@ -3,8 +3,12 @@
 #include "typedefs.h"
 #include <optional>
 
-std::set<std::pair<TileCoor, TileCoor>> Attack::advance(Map &map, std::map<CountryId, Country> &countries, std::map<CountryId, std::set<TileIndex>> &tiles_owned_by_country) {
-    double troop_cost_per_pixel = 1.0;
+std::set<std::pair<TileCoor, TileCoor>> Attack::advance(
+        Map &map,
+        std::map<CountryId, Country> &countries,
+        std::map<CountryId, std::set<TileIndex>> &tiles_owned_by_country
+) {
+    double troop_cost_per_pixel = 100.0;
 
     std::optional<Country> defender {};
     if (this->defender != 0)
@@ -13,7 +17,7 @@ std::set<std::pair<TileCoor, TileCoor>> Attack::advance(Map &map, std::map<Count
     Country &attacker = countries.at(this->attacker);
 
     if (defender.has_value()) {
-        troop_cost_per_pixel += (double)defender->troops / attacker.troops - 1;
+        troop_cost_per_pixel += ((double)defender->troops / attacker.troops - 1) * 100;
     }
 
     CQ_LOG_DEBUG << "Troop cost per pixel: " << troop_cost_per_pixel << '\n';
