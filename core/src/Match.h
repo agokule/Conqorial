@@ -11,7 +11,7 @@
 
 // CE stands for constexpr
 constexpr std::chrono::milliseconds attack_update_intervalCE { 50 };
-constexpr std::chrono::milliseconds population_update_intervalCE { 10'000 };
+constexpr std::chrono::milliseconds population_update_intervalCE { 2'000 };
 constexpr std::chrono::milliseconds ai_update_intervalCE { 500 };
 constexpr std::chrono::milliseconds economy_update_intervalCE { 1000 };
 
