@@ -36,6 +36,11 @@ void draw_main_ui(AppState &state, unsigned long long frame_time) {
     state.player_target_mobilization = player_target_mobilization;
     state.match.set_country_target_mobilization_level(state.player_country_id, state.player_target_mobilization);
 
+
+    int troops_selected = state.troops_selected;
+    ImGui::SliderInt("Troops", &troops_selected, 0, state.match.get_country(state.player_country_id).get_troops() / 2);
+    state.troops_selected = troops_selected;
+
     ImGui::Text("Money: %d", state.match.get_country(state.player_country_id).get_money());
     ImGui::Text("Troops: %d", state.match.get_country(state.player_country_id).get_troops());
 

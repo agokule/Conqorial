@@ -109,7 +109,7 @@ SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event) {
         } else if (state.match.get_game_state() == GameState::InGame) {
             // If the tile is not already owned by the player, check for an adjacent tile owned by the player.
             if (tile.owner != state.player_country_id)
-                state.match.attack(state.player_country_id, tile.owner, 10000, tileX, tileY);
+                state.match.attack(state.player_country_id, tile.owner, state.troops_selected, tileX, tileY);
         }
         state.region_cache_needs_update = true;
     }

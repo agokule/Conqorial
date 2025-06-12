@@ -29,6 +29,7 @@ struct AppState {
 
     CountryId player_country_id;
     uint8_t player_target_mobilization;
+    unsigned troops_selected = 0;
 
     std::vector<std::function<bool()>> callback_functions;
     Match match;
