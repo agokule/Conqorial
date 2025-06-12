@@ -100,6 +100,16 @@ const std::array<PyramidPiece, 20> &PopulationPyramid::get_pieces() const {
 }
 
 
+void PopulationPyramid::remove_casualties(unsigned casualties) {
+    auto troops_to_remove_each_piece {casualties / num_reproductive_age_groups};
+    for (auto &piece : pieces) {
+        if (piece.age >= reproductive_age_min && piece.age <= reproductive_age_max) {
+            piece.female_count -= troops_to_remove_each_piece;
+            piece.male_count -= troops_to_remove_each_piece;
+        }
+    }
+}
+
 void PopulationPyramid::update_total_population() {
     total_population = 0;
     for (const auto &piece : pieces) {

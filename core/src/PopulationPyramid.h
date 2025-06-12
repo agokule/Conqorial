@@ -10,6 +10,8 @@ const unsigned money_producing_age_max {60};
 const unsigned reproductive_age_min {20};
 const unsigned reproductive_age_max {55};
 
+const unsigned num_reproductive_age_groups {(reproductive_age_max - reproductive_age_min) / 5 + 1};
+
 struct PyramidPiece {
     // age range is from age to age + 5
     // unless it is 100+, then it is 100+
@@ -37,6 +39,9 @@ public:
     double calculate_birth_rate(double density, unsigned max_density, unsigned economic_score) const;
 
     const std::array<PyramidPiece, 20> &get_pieces() const;
+
+    // removes casualties from attacks
+    void remove_casualties(unsigned casualties);
 
     void update_total_population();
 };

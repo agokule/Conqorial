@@ -1,5 +1,6 @@
 #include "Attack.h"
 #include "Logging.h"
+#include "PopulationPyramid.h"
 #include "typedefs.h"
 #include <optional>
 
@@ -78,6 +79,10 @@ std::set<std::pair<TileCoor, TileCoor>> Attack::advance(
         attacker.troops -= troop_cost_per_pixel;
         this->troops_to_attack -= troop_cost_per_pixel;
     }
+
+    // remove casualities from the population pyramid
+    attacker.pyramid.remove_casualties(border.size() * troop_cost_per_pixel);
+
     this->current_boder = border;
     return border;
 }
