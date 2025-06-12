@@ -1,6 +1,7 @@
 #include "Country.h"
 #include "MapTile.h"
 #include "Logging.h"
+#include "PopulationPyramid.h"
 
 bool Country::can_attack(CountryId other_id, std::pair<unsigned, unsigned> pos, const Map &map) const {
     if (!(other_id != this->id && map.get_tile(pos.first, pos.second).type != MapTileType::Water))
@@ -33,6 +34,16 @@ bool Country::can_attack(CountryId other_id, std::pair<unsigned, unsigned> pos, 
 
 unsigned Country::get_troops() const {
     return troops;
+}
+
+void Country::calculate_troops() {
+    troops = 0;
+    for (const auto piece : pyramid.get_pieces()) {
+        if (piece.age >= reproductive_age_min && piece.age <= reproductive_age_max)
+            troops += (piece.male_count + piece.female_count) * target_mobilization_level;
+        if (piece.age > reproductive_age_max)
+            break;
+    }
 }
 
 std::string Country::get_name() const {
@@ -77,6 +88,13 @@ unsigned Country::get_urbanization_level() const {
 
 unsigned Country::upgrade_urbanization_level() {
     return ++urbanization_level;
+}
+
+uint8_t Country::get_target_mobilization_level() const {
+    return target_mobilization_level;
+}
+void Country::set_target_mobilization_level(uint8_t level) {
+    target_mobilization_level = level;
 }
 
 unsigned Country::get_money() const {

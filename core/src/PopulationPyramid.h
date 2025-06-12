@@ -5,6 +5,11 @@
 #include <cmath>
 #include <cstdint>
 
+const unsigned money_producing_age_min {20};
+const unsigned money_producing_age_max {60};
+const unsigned reproductive_age_min {20};
+const unsigned reproductive_age_max {55};
+
 struct PyramidPiece {
     // age range is from age to age + 5
     // unless it is 100+, then it is 100+
@@ -43,7 +48,7 @@ struct EconomyResult {
     int money_made;
 };
 
-EconomyResult get_economy_score(const PopulationPyramid &pyramid, CountryId country);
+EconomyResult get_economy_score(const PopulationPyramid &pyramid, CountryId country, uint8_t target_mobilization_level);
 
 }
 

@@ -9,12 +9,6 @@ double sigmoid(double x) {
     return 1 / (1 + exp(-x));
 }
 
-
-const unsigned money_producing_age_min {20};
-const unsigned money_producing_age_max {60};
-const unsigned reproductive_age_min {20};
-const unsigned reproductive_age_max {55};
-
 double PyramidPiece::get_death_rate(double life_expectancy) const {
     return (std::pow(tanh(age / life_expectancy) / 3, 2.5) + 0.001) / 3.5;
 }
@@ -115,14 +109,17 @@ void PopulationPyramid::update_total_population() {
 
 namespace PyramidUtils {
 
-EconomyResult get_economy_score(const PopulationPyramid &pyramid, CountryId country) {
+EconomyResult get_economy_score(const PopulationPyramid &pyramid, CountryId country, uint8_t target_mobilization_level) {
     static std::map<CountryId, ScrollingHistory<6>> money_made_history {};
+
+    double mobilization_percent {target_mobilization_level / 100.0};
 
     unsigned long money_producing_people {}, money_unproducing_people {};
 
     for (const auto &piece : pyramid.get_pieces()) {
         if (piece.age >= money_producing_age_min && piece.age < money_producing_age_max) {
-            money_producing_people += piece.male_count + piece.female_count;
+            auto pop {piece.male_count + piece.female_count};
+            money_producing_people += pop * (1.0 - mobilization_percent);
             continue;
         }
         money_unproducing_people += piece.male_count + piece.female_count;

@@ -5,6 +5,7 @@
 #include "color.h"
 #include "PopulationPyramid.h"
 #include "typedefs.h"
+#include <cstdint>
 #include <iostream>
 #include <string>
 
@@ -21,6 +22,10 @@ class Country {
     Color color;
 
     unsigned troops = 0;
+    // this is a percentage of the reproductive age
+    // group (of the pyramid) the player/ai wants to mobilize
+    uint8_t target_mobilization_level = 2;
+
     unsigned urbanization_level = 1;
     PopulationPyramid pyramid;
     unsigned money = 0;
@@ -33,6 +38,9 @@ public:
     bool can_attack(CountryId other_id, std::pair<unsigned, unsigned> pos, const Map &map) const;
 
     unsigned get_troops() const;
+    // uses the target_mobilization_level to calculate troops
+    void calculate_troops();
+
     std::string get_name() const;
     bool get_is_human() const;
     Color get_color() const;
@@ -47,6 +55,9 @@ public:
 
     unsigned get_urbanization_level() const;
     unsigned upgrade_urbanization_level();
+
+    uint8_t get_target_mobilization_level() const;
+    void set_target_mobilization_level(uint8_t level);
 
     unsigned get_money() const;
     void add_money(unsigned amount);
