@@ -107,7 +107,7 @@ void Match::update_populations() {
         if (number_tiles == 0)
             continue;
         auto current_population = country.pyramid.get_total_population();
-        auto economy = PyramidUtils::get_economy_score(country.pyramid, country.id);
+        auto economy = PyramidUtils::get_economy_score(country.pyramid, country.id, country.get_target_mobilization_level());
 
         country.set_economy(economy.score);
         country.set_density(current_population / number_tiles);
