@@ -157,47 +157,7 @@ SDL_AppResult SDL_AppIterate(void *appstate) {
     // SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
     SDL_RenderClear(renderer);  /* start with a blank canvas. */
 
-    ImGui::Begin("Hello there");
-    if (ImGui::Button("Reset view")) {
-        state.dst_map_to_display = { 0, 0, (float)state.match.get_map().get_width(), (float)state.match.get_map().get_height()};
-    }
-    ImGui::Text("Frame time: %llu", frame_time);
-    ImGui::Text("FPS: %.2f", ImGui::GetIO().Framerate);
-
-    ImGui::Checkbox("Profiler Enabled", &state.profiler_enabled);
-    Profiler::instance().enable(state.profiler_enabled);
-
-    static bool population_pyramid = false;
-    ImGui::Checkbox("Show Population Pyramid", &population_pyramid);
-
-    if (population_pyramid) {
-        show_population_pyramid_renderer(state, state.player_country_id);
-    }
-
-    state.frame_rates.AddPoint(SDL_GetTicks(), ImGui::GetIO().Framerate);
-
-    if (ImPlot::BeginPlot("##Frame Rate Details", ImVec2(-1, 100), ImPlotFlags_NoLegend)) {
-        ImPlot::SetupAxisLimits(ImAxis_X1, (state.frame_rates.Data.begin() + state.frame_rates.Offset)->x,
-                                SDL_GetTicks(), ImGuiCond_Always);
-        ImPlot::SetupAxis(ImAxis_X1, "FPS", ImPlotAxisFlags_AutoFit | ImPlotAxisFlags_NoTickLabels);
-        ImPlot::SetupAxis(ImAxis_Y1, nullptr, ImPlotAxisFlags_Opposite);
-        ImPlot::SetupAxisLimits(ImAxis_Y1, 0, 240, ImGuiCond_Always);
-        ImPlot::PlotLine("FPS", &state.frame_rates.Data[0].x, &state.frame_rates.Data[0].y,
-                         state.frame_rates.Data.size(), 0, state.frame_rates.Offset, 2 * sizeof(float));
-        ImPlot::EndPlot();
-    }
-
-    Profiler::instance().start_frame("Render Map Names");
-
-    ImDrawList* draw_list = ImGui::GetBackgroundDrawList();
-    render_country_labels(state.renderer, draw_list, state.match.get_map(),
-                        state.dst_map_to_display, state.match.get_countries(),
-                        state.region_cache, state.region_cache_needs_update);
-    state.region_cache_needs_update = false; // Reset after update
-
-    Profiler::instance().end_frame();
-
-    ImGui::End();
+    draw_main_ui(state, frame_time);
 
     Profiler::instance().start_frame("Draw Map");
     draw_map_texture(state.map_texture, renderer, state.dst_map_to_display);
