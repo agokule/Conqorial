@@ -244,7 +244,6 @@ void find_country_regions_with_rectangles(const Map& map, CountryId country_id,
             region.color.r = color.r;
             region.color.g = color.g;
             region.color.b = color.b;
-            region.color.a = color.a;
             
             // Only add regions with non-trivial rectangles
             if (region.rect_width >= 3 && region.rect_height >= 2) {

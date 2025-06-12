@@ -33,7 +33,7 @@ class Country {
     unsigned last_density = 0;
 public:
     Country(CountryId id, std::string name, bool is_human, Color color) : id {id}, name {name}, is_human {is_human}, color {color} {}
-    Country() : Country(0, "", false, {0, 0, 0, 0}) { std::cerr << "Warning: Created default country\n"; }
+    Country() : Country(0, "", false, {0, 0, 0}) { std::cerr << "Warning: Created default country\n"; }
 
     bool can_attack(CountryId other_id, std::pair<unsigned, unsigned> pos, const Map &map) const;
 

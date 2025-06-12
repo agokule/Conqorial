@@ -10,7 +10,7 @@ bool check_time_to_update(std::chrono::time_point<std::chrono::high_resolution_c
 
 
 Match::Match(unsigned width, unsigned height): countries {}, map {width, height} {
-    countries[0] = { 0, "Neutral", false, {0, 0, 0, 0} };
+    countries[0] = { 0, "Neutral", false, {0, 0, 0} };
     tiles_owned_by_country[0] = {};
 }
 

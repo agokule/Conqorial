@@ -44,7 +44,7 @@ struct AppState {
           player_target_mobilization {2},
           match {map.get_width(), map.get_height()}, pyramid_renderer {}, profiler_enabled(true)
           {
-        player_country_id = match.new_country("Player", true, {0,0,0,0}).get_id();
+        player_country_id = match.new_country("Player", true, {0,0,0}).get_id();
     };
 };
 
