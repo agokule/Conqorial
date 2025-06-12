@@ -25,16 +25,20 @@ const Country &Match::new_country(std::string name, bool is_player, Color color)
 }
 
 void Match::spawn_country(CountryId id, TileCoor x, TileCoor y) {
-    std::array<std::pair<TileCoor, TileCoor>, 9> coords = {
+    std::array<std::pair<TileCoor, TileCoor>, 25> coords {
         std::pair {x, y},
-        {x + 1, y},
-        {x, y + 1},
-        {x - 1, y},
-        {x, y - 1},
-        {x - 1, y - 1},
-        {x + 1, y - 1},
-        {x - 1, y + 1},
-        {x + 1, y + 1} 
+        {x + 1, y}, {x, y + 1},
+        {x - 1, y}, {x, y - 1},
+        {x - 1, y - 1}, {x + 1, y - 1},
+        {x - 1, y + 1}, {x + 1, y + 1},
+        {x + 2, y}, {x - 2, y},
+        {x, y + 2}, {x, y - 2},
+        {x + 2, y + 2}, {x + 2, y - 2},
+        {x - 2, y + 2}, {x - 2, y - 2},
+        {x + 1, y + 2}, {x + 1, y - 2},
+        {x - 1, y + 2}, {x - 1, y - 2},
+        {x + 2, y + 1}, {x + 2, y - 1},
+        {x - 2, y + 1}, {x - 2, y - 1},
     };
     for (auto &coord : coords) {
         if (map.get_tile(coord).owner != 0 ||
