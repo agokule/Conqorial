@@ -7,6 +7,7 @@
 #include <vector>
 #include <chrono>
 #include "GameState.h"
+#include "RandomGenerator.h"
 #include "typedefs.h"
 
 // CE stands for constexpr
@@ -22,6 +23,7 @@ class Match {
     Map map;
     std::map<CountryId, std::vector<CountryId>> alliances;
     std::map<CountryId, std::map<CountryId, Attack>> on_going_attacks;
+    RandomGenerator random;
 
     std::chrono::time_point<std::chrono::high_resolution_clock> last_population_update;
     std::chrono::time_point<std::chrono::high_resolution_clock> last_attack_update;
