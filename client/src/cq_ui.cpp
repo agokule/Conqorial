@@ -2,6 +2,7 @@
 #include "imgui.h"
 #include "implot.h"
 #include "Profiler.h"
+#include <algorithm>
 
 // Country id is the index of the country in the match
 // to show the pyramid for
@@ -37,8 +38,10 @@ void draw_main_ui(AppState &state, unsigned long long frame_time) {
     state.match.set_country_target_mobilization_level(state.player_country_id, state.player_target_mobilization);
 
 
-    int troops_selected = state.troops_selected;
-    ImGui::SliderInt("Troops", &troops_selected, 0, state.match.get_country(state.player_country_id).get_troops() / 2);
+    auto troops_max = state.match.get_country(state.player_country_id).get_troops() / 2;
+    int troops_selected {static_cast<int>(std::clamp(state.troops_selected, 0u, troops_max))};
+
+    ImGui::SliderInt("Troops", &troops_selected, 0, troops_max);
     state.troops_selected = troops_selected;
 
     ImGui::Text("Money: %d", state.match.get_country(state.player_country_id).get_money());
