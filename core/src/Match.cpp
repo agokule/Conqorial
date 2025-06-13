@@ -160,8 +160,10 @@ void Match::set_map_tile(TileCoor x, TileCoor y, CountryId owner) {
     TileIndex index = map.get_tile_index(x, y);
     tiles_owned_by_country[owner].insert(index);
     auto removed = tiles_owned_by_country[map.get_tile(x, y).owner].erase(index);
-    CONQORIAL_ASSERT_ALL(removed != 0, "The country which owns the tile does not have it in their tiles_owned_by_country set");
-    CONQORIAL_ASSERT_ALL(removed == 1, "The country which owns the tile potentially has more than one tile in their tiles_owned_by_country set");
+    if (map.get_tile(x, y).owner != 0) {
+        CONQORIAL_ASSERT_ALL(removed != 0, "The country which owns the tile does not have it in their tiles_owned_by_country set",
+                std::cerr << "Country: " << (short)map.get_tile(x, y).owner << "\n";);
+    }
     map.set_tile(x, y, owner);
 }
 
