@@ -91,6 +91,14 @@ unsigned Country::upgrade_urbanization_level() {
     return ++urbanization_level;
 }
 
+unsigned Country::get_millitary_level() const {
+    return millitary_level;
+}
+
+unsigned Country::upgrade_millitary_level() {
+    return ++millitary_level;
+}
+
 uint8_t Country::get_target_mobilization_level() const {
     return target_mobilization_level;
 }

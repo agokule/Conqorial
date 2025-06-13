@@ -27,6 +27,7 @@ class Country {
     uint8_t target_mobilization_level = 2;
 
     unsigned urbanization_level = 1;
+    unsigned millitary_level = 1;
     PopulationPyramid pyramid;
     unsigned money = 0;
     unsigned last_economy = 0;
@@ -55,6 +56,8 @@ public:
 
     unsigned get_urbanization_level() const;
     unsigned upgrade_urbanization_level();
+    unsigned get_millitary_level() const;
+    unsigned upgrade_millitary_level();
 
     uint8_t get_target_mobilization_level() const;
     void set_target_mobilization_level(uint8_t level);
