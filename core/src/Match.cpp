@@ -78,10 +78,6 @@ std::vector<std::pair<TileCoor, TileCoor>> Match::tick() {
         last_population_update = now;
         update_populations();
     }
-    if (check_time_to_update(last_economy_update, economy_update_intervalCE)) {
-        last_economy_update = now;
-        update_economies();
-    }
     if (check_time_to_update(last_ai_update, ai_update_intervalCE)) {
         last_ai_update = now;
         update_ai_decisions();
@@ -122,7 +118,6 @@ void Match::update_populations() {
     }
 }
 
-void Match::update_economies() { }
 void Match::update_ai_decisions() { }
 
 void Match::attack(CountryId attacker, CountryId defender_id, unsigned troops_to_attack, TileCoor tile_x, TileCoor tile_y) {

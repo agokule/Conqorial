@@ -14,7 +14,6 @@
 constexpr std::chrono::milliseconds attack_update_intervalCE { 50 };
 constexpr std::chrono::milliseconds population_update_intervalCE { 2'000 };
 constexpr std::chrono::milliseconds ai_update_intervalCE { 500 };
-constexpr std::chrono::milliseconds economy_update_intervalCE { 1000 };
 
 class Match {
     GameState game_state = GameState::SelectingStartingPoint;
@@ -33,7 +32,6 @@ class Match {
     void update_populations();
     std::vector<std::pair<TileCoor, TileCoor>> update_attacks();
     void update_ai_decisions();
-    void update_economies();
 public:
     Match(unsigned width, unsigned height);
 
