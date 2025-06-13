@@ -104,8 +104,15 @@ void PopulationPyramid::remove_casualties(unsigned casualties) {
     auto troops_to_remove_each_piece {casualties / num_reproductive_age_groups};
     for (auto &piece : pieces) {
         if (piece.age >= reproductive_age_min && piece.age <= reproductive_age_max) {
-            piece.female_count -= troops_to_remove_each_piece;
-            piece.male_count -= troops_to_remove_each_piece;
+            if (piece.female_count > troops_to_remove_each_piece)
+                piece.female_count -= troops_to_remove_each_piece;
+            else
+                piece.female_count = 0;
+
+            if (piece.male_count > troops_to_remove_each_piece)
+                piece.male_count -= troops_to_remove_each_piece;
+            else
+                piece.male_count = 0;
         }
     }
 }
