@@ -32,6 +32,9 @@ class Match {
     void update_populations();
     std::vector<std::pair<TileCoor, TileCoor>> update_attacks();
     void update_ai_decisions();
+
+    void spawn_and_create_ai_countries();
+
 public:
     Match(unsigned width, unsigned height);
 

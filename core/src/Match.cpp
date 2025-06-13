@@ -12,6 +12,8 @@ bool check_time_to_update(std::chrono::time_point<std::chrono::high_resolution_c
 Match::Match(unsigned width, unsigned height): countries {}, map {width, height}, random {} {
     countries.emplace(0, Country { 0, "Neutral", {0, 0, 0} });
     tiles_owned_by_country[0] = {};
+
+    spawn_and_create_ai_countries();
 }
 
 const Country &Match::get_country(CountryId id) const {
@@ -100,6 +102,33 @@ std::vector<std::pair<TileCoor, TileCoor>> Match::update_attacks() {
         }
     }
     return tiles_changed;
+}
+
+void Match::spawn_and_create_ai_countries() {
+    constexpr unsigned num_ai_countries = 15;
+    std::array<CountryId, num_ai_countries> ai_countries;
+
+    for (unsigned i = 0; i < num_ai_countries; i++) {
+        ai_countries[i] = new_country("Bot " + std::to_string(i), false, {
+                static_cast<uint8_t>(random.randint(0, 255)),
+                static_cast<uint8_t>(random.randint(0, 255)),
+                static_cast<uint8_t>(random.randint(0, 255))
+        }).id;
+    }
+
+    auto current_ai_country {ai_countries.begin()};
+    for (unsigned tile = 0; tile < map.get_width() * map.get_height(); ++tile) {
+        if (map.get_tile(tile).owner != 0)
+            continue;
+        if (map.get_tile(tile).type == MapTileType::Water)
+            continue;
+
+        spawn_country(*current_ai_country, random.randint(0, map.get_width() - 1), random.randint(0, map.get_height() - 1));
+        tile += 20;
+        current_ai_country++;
+        if (current_ai_country == ai_countries.end())
+            break;
+    }
 }
 
 void Match::update_populations() {
