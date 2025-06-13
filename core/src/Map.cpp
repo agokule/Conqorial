@@ -46,6 +46,10 @@ void Map::set_tile(std::pair<unsigned, unsigned> pos, CountryId owner) {
     set_tile(pos.first, pos.second, owner);
 }
 
+void Map::set_tile(TileIndex pos, CountryId owner) {
+    set_tile(get_tile_coors(pos), owner);
+}
+
 MapTile Map::get_tile(unsigned x, unsigned y) const {
     return tiles[y * width + x];
 }
@@ -54,6 +58,9 @@ MapTile Map::get_tile(std::pair<unsigned, unsigned> pos) const {
     return get_tile(pos.first, pos.second);
 }
 
+MapTile Map::get_tile(TileIndex pos) const {
+    return get_tile(get_tile_coors(pos));
+}
 
 unsigned Map::get_width() const {
     return width;

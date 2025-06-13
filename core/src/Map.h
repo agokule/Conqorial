@@ -19,8 +19,11 @@ public:
     void set_tile(unsigned x, unsigned y, CountryId owner);
     // This should not be used outside of the Match and Attack class!
     void set_tile(std::pair<unsigned, unsigned> pos, CountryId owner);
+    // This should not be used outside of the Match and Attack class!
+    void set_tile(TileIndex pos, CountryId owner);
     MapTile get_tile(unsigned x, unsigned y) const;
     MapTile get_tile(std::pair<unsigned, unsigned> pos) const;
+    MapTile get_tile(TileIndex pos) const;
 
     unsigned get_width() const;
     unsigned get_height() const;
