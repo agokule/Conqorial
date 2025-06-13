@@ -3,6 +3,20 @@
 #include "Logging.h"
 #include "PopulationPyramid.h"
 
+AIPlayerBehavior::AIPlayerBehavior(RandomGenerator &random) {
+    check_attack_interval = random.randint(ai_check_attack_interval_minCE, ai_check_attack_interval_maxCE);
+    target_mobilization_level = random.randint(ai_mobilization_level_minCE, ai_mobilization_level_maxCE);
+    reserve_troops = random.randint(ai_reserve_troops_minCE, ai_reserve_troops_maxCE);
+}
+
+Country::Country(CountryId id, std::string name, Color color, RandomGenerator *random)
+    : id {id}, name {name}, is_human {random == nullptr}, color {color} {
+    if (random != nullptr)
+        ai_behavior = AIPlayerBehavior(*random);
+    else
+        ai_behavior = std::nullopt;
+}
+
 bool Country::can_attack(CountryId other_id, std::pair<unsigned, unsigned> pos, const Map &map) const {
     if (!(other_id != this->id && map.get_tile(pos.first, pos.second).type != MapTileType::Water))
         return false;

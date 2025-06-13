@@ -2,12 +2,35 @@
 #define COUNTRY_H
 
 #include "Map.h"
+#include "RandomGenerator.h"
 #include "color.h"
 #include "PopulationPyramid.h"
 #include "typedefs.h"
 #include <cstdint>
 #include <iostream>
 #include <string>
+#include <optional>
+
+constexpr uint8_t ai_check_attack_interval_minCE = 5'000;
+constexpr uint8_t ai_check_attack_interval_maxCE = 20'000;
+
+constexpr uint8_t ai_mobilization_level_minCE = 5;
+constexpr uint8_t ai_mobilization_level_maxCE = 20;
+
+constexpr uint8_t ai_reserve_troops_minCE = 30;
+constexpr uint8_t ai_reserve_troops_maxCE = 60;
+
+struct AIPlayerBehavior {
+    // how often the AI will check if it can attack a neighbor
+    // in milliseconds
+    uint8_t check_attack_interval;
+    // millitary recruitment target percentage
+    uint8_t target_mobilization_level;
+    // how troops the AI will ALWAYS keep in reserve as a percentage
+    uint8_t reserve_troops;
+
+    AIPlayerBehavior(RandomGenerator &random);
+};
 
 class Country {
     friend struct Attack;
@@ -32,9 +55,13 @@ class Country {
     unsigned money = 0;
     unsigned last_economy = 0;
     unsigned last_density = 0;
+
+    // if .has_value() returns true then it is an AI player
+    std::optional<AIPlayerBehavior> ai_behavior;
 public:
-    Country(CountryId id, std::string name, bool is_human, Color color) : id {id}, name {name}, is_human {is_human}, color {color} {}
-    Country() : Country(0, "", false, {0, 0, 0}) { std::cerr << "Warning: Created default country\n"; }
+    // if the random generator is passed in then the country will be an AI
+    // otherwise it will be a player
+    Country(CountryId id, std::string name, Color color, RandomGenerator *random = nullptr);
 
     bool can_attack(CountryId other_id, std::pair<unsigned, unsigned> pos, const Map &map) const;
 

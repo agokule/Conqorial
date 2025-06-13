@@ -10,7 +10,7 @@ bool check_time_to_update(std::chrono::time_point<std::chrono::high_resolution_c
 
 
 Match::Match(unsigned width, unsigned height): countries {}, map {width, height}, random {} {
-    countries[0] = { 0, "Neutral", false, {0, 0, 0} };
+    countries.emplace(0, Country { 0, "Neutral", {0, 0, 0} });
     tiles_owned_by_country[0] = {};
 }
 
@@ -21,7 +21,8 @@ const Country &Match::get_country(CountryId id) const {
 const Country &Match::new_country(std::string name, bool is_player, Color color) {
     CountryId id = countries.size();
     tiles_owned_by_country[id] = {};
-    return countries.insert({ id, Country { id, name, is_player, color } }).first->second;
+    RandomGenerator *random_arg = is_player ? &random : nullptr;
+    return countries.insert({ id, Country { id, name, color, random_arg } }).first->second;
 }
 
 void Match::spawn_country(CountryId id, TileCoor x, TileCoor y) {
