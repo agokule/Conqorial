@@ -120,7 +120,12 @@ void PopulationPyramid::update_total_population() {
 namespace PyramidUtils {
 
 EconomyResult get_economy_score(const PopulationPyramid &pyramid, CountryId country, uint8_t target_mobilization_level) {
-    static std::map<CountryId, ScrollingHistory<6>> money_made_history {};
+    // the unsigned is number of times the economy was calucated
+    static std::map<CountryId, std::pair<unsigned, double>> avg_money_made {};
+    if (avg_money_made.find(country) == avg_money_made.end())
+        avg_money_made[country] = {0, 0.0};
+
+    auto &[num_times_calculated, avg_money] = avg_money_made[country];
 
     double mobilization_percent {target_mobilization_level / 100.0};
 
@@ -139,12 +144,13 @@ EconomyResult get_economy_score(const PopulationPyramid &pyramid, CountryId coun
         money_producing_people * 0.25 - money_unproducing_people * 0.1
     };
 
-    auto previous_money_made_6_months_ago = money_made_history[country].push(money_made);
+    double difference = avg_money / money_made;
 
-    double difference = money_made - previous_money_made_6_months_ago;
+    avg_money += (money_made - avg_money) / (num_times_calculated + 1);
+    num_times_calculated++;
 
     return {
-        static_cast<unsigned int>((tanh((difference) / 100.0) + 1) * 100),
+        static_cast<unsigned int>((tanh((difference) / 10.0) + 1) * 100),
         static_cast<int>(money_made)
     };
 }
