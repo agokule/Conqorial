@@ -3,9 +3,11 @@
 #include "Logging.h"
 #include "typedefs.h"
 
-bool check_time_to_update(std::chrono::time_point<std::chrono::high_resolution_clock> last_update, std::chrono::milliseconds interval) {
-    auto now = std::chrono::high_resolution_clock::now();
-    return std::chrono::duration_cast<std::chrono::milliseconds>(now - last_update) > interval;
+using namespace std::chrono;
+
+bool check_time_to_update(CQIntervalTimePoint last_update, std::chrono::milliseconds interval) {
+    auto now = steady_clock::now();
+    return duration_cast<milliseconds>(now - last_update) > interval;
 }
 
 
@@ -70,7 +72,7 @@ std::vector<std::pair<TileCoor, TileCoor>> Match::tick() {
 
 
     std::vector<std::pair<TileCoor, TileCoor>> result;
-    auto now = std::chrono::high_resolution_clock::now();
+    auto now = steady_clock::now();
     if (check_time_to_update(last_attack_update, attack_update_intervalCE)) {
         last_attack_update = now;
         auto tiles_changed = update_attacks();
