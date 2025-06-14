@@ -2,11 +2,20 @@
 #include "MapTile.h"
 #include "Logging.h"
 #include "PopulationPyramid.h"
+#include <chrono>
 
 AIPlayerBehavior::AIPlayerBehavior(RandomGenerator &random) {
     check_attack_interval = random.randint(ai_check_attack_interval_minCE, ai_check_attack_interval_maxCE);
     target_mobilization_level = random.randint(ai_mobilization_level_minCE, ai_mobilization_level_maxCE);
     reserve_troops = random.randint(ai_reserve_troops_minCE, ai_reserve_troops_maxCE);
+
+    update_last_attack_check();
+}
+
+void AIPlayerBehavior::update_last_attack_check() {
+    last_attack_check = std::chrono::steady_clock::now();
+    auto duration = last_attack_check.time_since_epoch();
+    CQ_LOG_DEBUG << "Last attack check: " << std::chrono::duration_cast<std::chrono::milliseconds>(duration).count() << '\n';
 }
 
 Country::Country(CountryId id, std::string name, Color color, RandomGenerator *random)
