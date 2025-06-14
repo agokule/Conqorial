@@ -22,7 +22,7 @@ constexpr uint8_t ai_reserve_troops_maxCE = 60;
 struct AIPlayerBehavior {
     // how often the AI will check if it can attack a neighbor
     // in milliseconds
-    unsigned short check_attack_interval;
+    unsigned short check_decision_interval;
     // millitary recruitment target percentage
     uint8_t target_mobilization_level;
     // how troops the AI will ALWAYS keep in reserve as a percentage

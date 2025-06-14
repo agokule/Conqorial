@@ -5,7 +5,7 @@
 #include <chrono>
 
 AIPlayerBehavior::AIPlayerBehavior(RandomGenerator &random) {
-    check_attack_interval = random.randint(ai_check_attack_interval_minCE, ai_check_attack_interval_maxCE);
+    check_decision_interval = random.randint(ai_check_attack_interval_minCE, ai_check_attack_interval_maxCE);
     target_mobilization_level = random.randint(ai_mobilization_level_minCE, ai_mobilization_level_maxCE);
     reserve_troops = random.randint(ai_reserve_troops_minCE, ai_reserve_troops_maxCE);
 
