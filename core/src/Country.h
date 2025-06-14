@@ -81,6 +81,8 @@ public:
     void set_economy(unsigned economy);
     void set_density(unsigned density);
 
+    unsigned calculate_millitary_score() const;
+
     unsigned get_urbanization_level() const;
     unsigned upgrade_urbanization_level();
     unsigned get_millitary_level() const;
