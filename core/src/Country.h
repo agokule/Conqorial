@@ -7,12 +7,11 @@
 #include "PopulationPyramid.h"
 #include "typedefs.h"
 #include <cstdint>
-#include <iostream>
 #include <string>
 #include <optional>
 
-constexpr uint8_t ai_check_attack_interval_minCE = 5'000;
-constexpr uint8_t ai_check_attack_interval_maxCE = 20'000;
+constexpr unsigned short ai_check_attack_interval_minCE = 5'000;
+constexpr unsigned short ai_check_attack_interval_maxCE = 20'000;
 
 constexpr uint8_t ai_mobilization_level_minCE = 5;
 constexpr uint8_t ai_mobilization_level_maxCE = 20;
@@ -23,7 +22,7 @@ constexpr uint8_t ai_reserve_troops_maxCE = 60;
 struct AIPlayerBehavior {
     // how often the AI will check if it can attack a neighbor
     // in milliseconds
-    uint8_t check_attack_interval;
+    unsigned short check_attack_interval;
     // millitary recruitment target percentage
     uint8_t target_mobilization_level;
     // how troops the AI will ALWAYS keep in reserve as a percentage
