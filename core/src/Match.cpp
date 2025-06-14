@@ -114,6 +114,9 @@ void Match::spawn_and_create_ai_countries() {
                 static_cast<uint8_t>(random.randint(0, 255)),
                 static_cast<uint8_t>(random.randint(0, 255))
         }).id;
+        
+        auto &country = countries.at(ai_countries[i]);
+        country.set_target_mobilization_level(country.ai_behavior->target_mobilization_level);
     }
 
     auto current_ai_country {ai_countries.begin()};
