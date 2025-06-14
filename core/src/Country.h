@@ -28,7 +28,7 @@ struct AIPlayerBehavior {
     // how troops the AI will ALWAYS keep in reserve as a percentage
     uint8_t reserve_troops;
 
-    CQIntervalTimePoint last_attack_check;
+    CQIntervalTimePoint last_descision_check;
 
     AIPlayerBehavior(RandomGenerator &random);
     void update_last_attack_check();

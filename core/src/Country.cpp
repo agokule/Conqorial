@@ -13,8 +13,8 @@ AIPlayerBehavior::AIPlayerBehavior(RandomGenerator &random) {
 }
 
 void AIPlayerBehavior::update_last_attack_check() {
-    last_attack_check = std::chrono::steady_clock::now();
-    auto duration = last_attack_check.time_since_epoch();
+    last_descision_check = std::chrono::steady_clock::now();
+    auto duration = last_descision_check.time_since_epoch();
     CQ_LOG_DEBUG << "Last attack check: " << std::chrono::duration_cast<std::chrono::milliseconds>(duration).count() << '\n';
 }
 
