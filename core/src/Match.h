@@ -24,10 +24,9 @@ class Match {
     std::map<CountryId, std::map<CountryId, Attack>> on_going_attacks;
     RandomGenerator random;
 
-    std::chrono::time_point<std::chrono::high_resolution_clock> last_population_update;
-    std::chrono::time_point<std::chrono::high_resolution_clock> last_attack_update;
-    std::chrono::time_point<std::chrono::high_resolution_clock> last_ai_update;
-    std::chrono::time_point<std::chrono::high_resolution_clock> last_economy_update;
+    CQIntervalTimePoint last_population_update;
+    CQIntervalTimePoint last_attack_update;
+    CQIntervalTimePoint last_ai_update;
 
     void update_populations();
     std::vector<std::pair<TileCoor, TileCoor>> update_attacks();
