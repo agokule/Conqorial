@@ -25,7 +25,7 @@ const Country &Match::get_country(CountryId id) const {
 const Country &Match::new_country(std::string name, bool is_player, Color color) {
     CountryId id = countries.size();
     tiles_owned_by_country[id] = {};
-    RandomGenerator *random_arg = is_player ? &random : nullptr;
+    RandomGenerator *random_arg = is_player ? nullptr : &random;
     return countries.insert({ id, Country { id, name, color, random_arg } }).first->second;
 }
 
@@ -97,7 +97,7 @@ std::vector<std::pair<TileCoor, TileCoor>> Match::update_attacks() {
             auto tiles_changed_this_attack = it->second.advance(map, countries, tiles_owned_by_country);
             if (tiles_changed_this_attack.empty()) {
                 it = attacks.erase(it);
-                if (attacks.empty())
+                if (attacks.empty() || it == attacks.end())
                     break;
             }
             tiles_changed.insert(tiles_changed.end(), tiles_changed_this_attack.begin(), tiles_changed_this_attack.end());
