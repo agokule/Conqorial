@@ -70,6 +70,10 @@ void Country::calculate_troops() {
     }
 }
 
+unsigned long Country::get_military_score() const {
+    return troops * millitary_level;
+}
+
 std::string Country::get_name() const {
     return name;
 }

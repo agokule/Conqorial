@@ -70,6 +70,7 @@ public:
     unsigned get_troops() const;
     // uses the target_mobilization_level to calculate troops
     void calculate_troops();
+    unsigned long get_military_score() const;
 
     std::string get_name() const;
     bool get_is_human() const;
