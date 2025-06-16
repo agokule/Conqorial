@@ -3,6 +3,7 @@
 #include "Logging.h"
 #include "PopulationPyramid.h"
 #include <chrono>
+#include <optional>
 
 AIPlayerBehavior::AIPlayerBehavior(RandomGenerator &random) {
     check_decision_interval = random.randint(ai_check_attack_interval_minCE, ai_check_attack_interval_maxCE);
@@ -26,14 +27,7 @@ Country::Country(CountryId id, std::string name, Color color, RandomGenerator *r
         ai_behavior = std::nullopt;
 }
 
-bool Country::can_attack(CountryId other_id, std::pair<unsigned, unsigned> pos, const Map &map) const {
-    if (!(other_id != this->id && map.get_tile(pos.first, pos.second).type != MapTileType::Water))
-        return false;
-    if (map.get_tile(pos.first, pos.second).owner != other_id) {
-        CQ_LOG_RELEASE_ERROR << "Huh what? The other id does not equal the tile owner" << '\n';
-        return false;
-    }
-
+bool Country::can_attack(CountryId other_id, const Map &map) const {
     // check if there is a border between the 2 countries
     int directions[4][2] = { {1,0}, {-1,0}, {0,1}, {0,-1} };
     for (unsigned y = 0; y < map.get_height(); y++) {

@@ -154,8 +154,8 @@ void Match::update_populations() {
 
 void Match::update_ai_decisions() { }
 
-void Match::attack(CountryId attacker, CountryId defender_id, unsigned troops_to_attack, TileCoor tile_x, TileCoor tile_y) {
-    bool able_to_attack = get_country(attacker).can_attack(defender_id, {tile_x, tile_y}, map);
+void Match::attack(CountryId attacker, CountryId defender_id, unsigned troops_to_attack) {
+    bool able_to_attack = get_country(attacker).can_attack(defender_id, map);
 
     CQ_LOG_DEBUG << "Can attack: " << able_to_attack << "\n";
     if (!able_to_attack)

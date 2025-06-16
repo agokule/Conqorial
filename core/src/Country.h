@@ -65,7 +65,7 @@ public:
     // otherwise it will be a player
     Country(CountryId id, std::string name, Color color, RandomGenerator *random = nullptr);
 
-    bool can_attack(CountryId other_id, std::pair<unsigned, unsigned> pos, const Map &map) const;
+    bool can_attack(CountryId other_id, const Map &map) const;
 
     unsigned get_troops() const;
     // uses the target_mobilization_level to calculate troops

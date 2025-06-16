@@ -46,7 +46,7 @@ public:
     
     void new_alliance(CountryId id1, CountryId id2);
 
-    void attack(CountryId attacker, CountryId defender_id, unsigned troops_to_attack, TileCoor tile_x, TileCoor tile_y);
+    void attack(CountryId attacker, CountryId defender_id, unsigned troops_to_attack);
 
     const Map &get_map() const;
     void set_map_tile(TileCoor x, TileCoor y, CountryId owner);
