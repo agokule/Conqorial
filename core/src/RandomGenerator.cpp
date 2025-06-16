@@ -26,6 +26,10 @@ double RandomGenerator::rand_double() {
     return rand_double(0.0, 1.0);
 }
 
+bool RandomGenerator::rand_bool() {
+    return randint(0, 1);
+}
+
 unsigned int RandomGenerator::get_seed() const {
     return seed;
 }

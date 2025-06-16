@@ -27,6 +27,9 @@ public:
     
     // Generate random double in range [0, 1)
     double rand_double();
+
+    // return true or false randomly
+    bool rand_bool();
     
     // Get the seed used
     unsigned int get_seed() const;
