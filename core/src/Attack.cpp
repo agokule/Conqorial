@@ -17,9 +17,12 @@ std::set<std::pair<TileCoor, TileCoor>> Attack::advance(
 
     Country &attacker = countries.at(this->attacker);
 
-    if (defender.has_value()) {
-        troop_cost_per_pixel += ((double)defender->troops / attacker.troops - 1) * 100;
-    }
+    double defending_troops = 0.0;
+    if (defender.has_value())
+        defending_troops = (double)defender->troops;
+    else
+        defending_troops = 100.0;
+    troop_cost_per_pixel += (defending_troops / attacker.troops - 1) * 100;
 
     CQ_LOG_DEBUG << "Troop cost per pixel: " << troop_cost_per_pixel << '\n';
     CQ_LOG_DEBUG << "Troops to attack: " << this->troops_to_attack << '\n';
