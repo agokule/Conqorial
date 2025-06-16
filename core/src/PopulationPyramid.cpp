@@ -106,23 +106,27 @@ void PopulationPyramid::remove_casualties(unsigned casualties) {
     for (int i = 0; i < 2; ++i) {
     for (auto &piece : pieces) {
         if (piece.age >= reproductive_age_min && piece.age <= reproductive_age_max) {
-            if (piece.female_count > troops_to_remove_each_piece)
+            if (piece.female_count > troops_to_remove_each_piece) {
                 piece.female_count -= troops_to_remove_each_piece;
-            else {
+                casualties -= troops_to_remove_each_piece;
+            } else {
                 troops_to_remove_each_piece += troops_to_remove_each_piece - piece.female_count;
                 piece.female_count = 0;
             }
 
-            if (piece.male_count > troops_to_remove_each_piece)
+            if (piece.male_count > troops_to_remove_each_piece) {
                 piece.male_count -= troops_to_remove_each_piece;
-            else {
+                casualties -= troops_to_remove_each_piece;
+            } else {
                 troops_to_remove_each_piece += troops_to_remove_each_piece - piece.male_count;
                 piece.male_count = 0;
             }
         }
+        if (casualties == 0)
+            break;
     }
     }
-    CONQORIAL_ASSERT_ALL(troops_to_remove_each_piece == 0, "Tried to remove more troops than owned");
+    CONQORIAL_ASSERT_ALL(casualties == 0, "Tried to remove more troops than owned");
 }
 
 void PopulationPyramid::update_total_population() {
