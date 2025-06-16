@@ -152,7 +152,32 @@ void Match::update_populations() {
     }
 }
 
-void Match::update_ai_decisions() { }
+void Match::update_ai_decisions() {
+    for (auto &[id, country] : countries) {
+        if (country.is_human || country.id == 0)
+            continue;
+        CONQORIAL_ASSERT_ALL(country.ai_behavior != std::nullopt, "Country has no AI behavior",
+                std::cerr << "Country id: " << (short)country.id << "\n";);
+        CQIntervalTimePoint now = std::chrono::steady_clock::now();
+        auto duration = now - country.ai_behavior->last_descision_check ;
+        if (duration_cast<milliseconds>(duration).count() < country.ai_behavior->check_decision_interval)
+            continue;
+
+        auto [border, neighbors] = map.get_border(country.id, tiles_owned_by_country);
+        CountryId weakest_millitary_neighbor = neighbors.empty() ? 0 : *neighbors.begin();
+        for (CountryId neighbor : neighbors) {
+            if (countries.at(neighbor).get_military_score() < countries.at(weakest_millitary_neighbor).get_military_score())
+                weakest_millitary_neighbor = neighbor;
+        }
+        Country &weakest_country = countries.at(weakest_millitary_neighbor);
+        CQ_LOG_DEBUG << "Weakest country: " << (short)weakest_country.id << "\n";
+        if (weakest_country.get_military_score() < country.get_military_score() && random.rand_bool()) {
+            auto troops = country.get_troops() * ((100 - country.ai_behavior->reserve_troops) / 100.0);
+            CQ_LOG_DEBUG << "Attacking country " << (short)weakest_country.id << " with troops: " << troops << "\n";
+            attack(country.id, weakest_country.id, troops);
+        }
+    }
+}
 
 void Match::attack(CountryId attacker, CountryId defender_id, unsigned troops_to_attack) {
     bool able_to_attack = get_country(attacker).can_attack(defender_id, map);
