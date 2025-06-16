@@ -81,3 +81,28 @@ TileIndex Map::get_tile_index(std::pair<TileCoor, TileCoor> pos) const {
 std::pair<TileCoor, TileCoor> Map::get_tile_coors(TileIndex index) const {
     return { index % width, index / width };
 }
+
+Map::BorderResult Map::get_border(CountryId from, const std::map<CountryId, std::set<TileIndex>> &tiles_owned_by_country, std::optional<CountryId> to) const {
+    std::set<TileIndex> border;
+    std::set<CountryId> neighbors;
+    constexpr int directions[4][2] = { {1,0}, {-1,0}, {0,1}, {0,-1} };
+    for (TileIndex tile : tiles_owned_by_country.at(from)) {
+        auto [x, y] = get_tile_coors(tile);
+        for (auto &dir : directions) {
+            int nx = x + dir[0];
+            int ny = y + dir[1];
+            if (nx >= 0 && nx < (int)get_width() && ny >= 0 && ny < (int)get_height()) {
+                MapTile neighbor = get_tile(nx, ny);
+                if (to.has_value() && neighbor.owner != to.value())
+                    continue;
+                if (neighbor.owner != from && neighbor.type != MapTileType::Water) {
+                    border.insert(get_tile_index(x, y));
+                    neighbors.insert(neighbor.owner);
+                }
+            }
+        }
+    }
+    return {border, neighbors};
+}
+
+

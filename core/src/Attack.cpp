@@ -32,22 +32,9 @@ std::set<std::pair<TileCoor, TileCoor>> Attack::advance(
 
     if (this->current_boder.empty()) {
         // no cached border, do a full check over the entire map
-        for (unsigned y = 0; y < map.get_height(); y++) {
-            for (unsigned x = 0; x < map.get_width(); x++) {
-                if (map.get_tile(x, y).owner == defender->id && map.get_tile(x, y).type != MapTileType::Water) {
-                    for (auto &dir : directions) {
-                        int nx = x + dir[0];
-                        int ny = y + dir[1];
-                        if (nx >= 0 && nx < (int)map.get_width() && ny >= 0 && ny < (int)map.get_height()) {
-                            MapTile neighbor = map.get_tile(nx, ny);
-                            if (neighbor.owner == attacker.get_id() && neighbor.type != MapTileType::Water) {
-                                border.insert({x, y});
-                            }
-                        }
-                    }
-                }
-            }
-        }
+        auto border_result = map.get_border(this->attacker, tiles_owned_by_country, this->defender);
+        for (TileIndex tile : border_result.border)
+            border.insert(map.get_tile_coors(tile));
     } else {
         // just check the cached border
         for (auto [x, y] : this->current_boder) {
