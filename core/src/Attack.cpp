@@ -2,6 +2,7 @@
 #include "Logging.h"
 #include "PopulationPyramid.h"
 #include "typedefs.h"
+#include <cmath>
 #include <optional>
 
 std::set<std::pair<TileCoor, TileCoor>> Attack::advance(
@@ -18,11 +19,17 @@ std::set<std::pair<TileCoor, TileCoor>> Attack::advance(
     Country &attacker = countries.at(this->attacker);
 
     double defending_troops = 0.0;
-    if (defender != nullptr)
+    if (defender != nullptr) {
         defending_troops = (double)defender->troops;
-    else
+        defending_troops *= std::pow(2, defender->get_millitary_level());
+    } else
         defending_troops = 100.0;
-    troop_cost_per_pixel += (defending_troops / attacker.troops - 1) * 100;
+
+    double attacking_troops = (double)attacker.troops;
+    attacking_troops = (double)attacker.troops;
+    attacking_troops *= std::pow(2, attacker.get_millitary_level());
+
+    troop_cost_per_pixel += (defending_troops / attacking_troops - 1) * 100;
 
     CQ_LOG_DEBUG << "Troop cost per pixel: " << troop_cost_per_pixel << '\n';
     CQ_LOG_DEBUG << "Troops to attack: " << this->troops_to_attack << '\n';
