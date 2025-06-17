@@ -97,7 +97,7 @@ unsigned Country::get_density() const {
 }
 
 unsigned Country::calculate_millitary_score() const {
-    return millitary_level * troops;
+    return troops * std::pow(2, millitary_level);
 }
 
 void Country::set_economy(unsigned economy) {
