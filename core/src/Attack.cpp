@@ -11,14 +11,14 @@ std::set<std::pair<TileCoor, TileCoor>> Attack::advance(
 ) {
     double troop_cost_per_pixel = 100.0;
 
-    std::optional<Country> defender {};
+    const Country *defender {nullptr};
     if (this->defender != 0)
-        defender = countries.at(this->defender);
+        defender = &countries.at(this->defender);
 
     Country &attacker = countries.at(this->attacker);
 
     double defending_troops = 0.0;
-    if (defender.has_value())
+    if (defender != nullptr)
         defending_troops = (double)defender->troops;
     else
         defending_troops = 100.0;
@@ -46,7 +46,7 @@ std::set<std::pair<TileCoor, TileCoor>> Attack::advance(
                 int ny = y + dir[1];
                 if (nx >= 0 && nx < (int)map.get_width() && ny >= 0 && ny < (int)map.get_height()) {
                     MapTile neighbor = map.get_tile(nx, ny);
-                    if (neighbor.owner == defender->id && neighbor.type != MapTileType::Water) {
+                    if (neighbor.owner == this->defender && neighbor.type != MapTileType::Water) {
                         border.insert({nx, ny});
                     }
                 }
