@@ -44,6 +44,11 @@ void draw_main_ui(AppState &state, unsigned long long frame_time) {
     ImGui::SliderInt("Troops", &troops_selected, 0, troops_max);
     state.troops_selected = troops_selected;
 
+    if (ImGui::Button("Upgrade Millitary Level")) {
+        state.match.upgrade_country_millitary(state.player_country_id);
+    }
+
+    ImGui::Text("Millitary Level: %d", state.match.get_country(state.player_country_id).get_millitary_level());
     ImGui::Text("Money: %d", state.match.get_country(state.player_country_id).get_money());
     ImGui::Text("Troops: %d", state.match.get_country(state.player_country_id).get_troops());
 

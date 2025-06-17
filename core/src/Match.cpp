@@ -230,6 +230,10 @@ void Match::set_country_target_mobilization_level(CountryId id, uint8_t level) {
     countries.at(id).set_target_mobilization_level(level);
 }
 
+void Match::upgrade_country_millitary(CountryId id) {
+    countries.at(id).upgrade_millitary_level();
+}
+
 const std::map<CountryId, Country> &Match::get_countries() const {
     return countries;
 }
