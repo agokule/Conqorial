@@ -226,6 +226,14 @@ void Match::set_map_tile(std::pair<TileCoor, TileCoor> pos, CountryId owner) {
     set_map_tile(pos.first, pos.second, owner);
 }
 
+MapTile Match::get_map_tile(TileCoor x, TileCoor y) const {
+    return map.get_tile(x, y);
+}
+
+MapTile Match::get_map_tile(std::pair<TileCoor, TileCoor> pos) const {
+    return get_map_tile(pos.first, pos.second);
+}
+
 void Match::set_country_target_mobilization_level(CountryId id, uint8_t level) {
     countries.at(id).set_target_mobilization_level(level);
 }

@@ -51,6 +51,8 @@ public:
     const Map &get_map() const;
     void set_map_tile(TileCoor x, TileCoor y, CountryId owner);
     void set_map_tile(std::pair<TileCoor, TileCoor> pos, CountryId owner);
+    MapTile get_map_tile(TileCoor x, TileCoor y) const;
+    MapTile get_map_tile(std::pair<TileCoor, TileCoor> pos) const;
 
     void set_country_target_mobilization_level(CountryId id, uint8_t level);
     void upgrade_country_millitary(CountryId id);
