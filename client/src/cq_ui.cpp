@@ -86,7 +86,7 @@ void display_country_info(AppState &state, CountryId country_id) {
         return;
 
     const Country &country = state.match.get_country(country_id);
-    ImGui::Begin("Country Info");
+    ImGui::Begin("Country Info", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
     ImGui::Text("Name: %s", country.get_name().c_str());
     ImGui::Text("Millitary Level: %d", country.get_millitary_level());
     ImGui::Text("Money: %d", country.get_money());
