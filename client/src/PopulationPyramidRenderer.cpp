@@ -124,13 +124,14 @@ void PopulationPyramidRenderer::render_controls(int urbanization_param) {
     ImGui::Text("Total Population: %u", country->pyramid.get_total_population());
 }
 
-void PopulationPyramidRenderer::render(int urbanization_param) {
-    
-    ImGui::Begin("Population Pyramid Visualization");
+void PopulationPyramidRenderer::render(int urbanization_param, bool seperate_window) {
+    if (seperate_window)
+        ImGui::Begin("Population Pyramid Visualization");
     render_controls(urbanization_param);
     render_pyramid_chart();
     render_population_trend();
-    ImGui::End();
+    if (seperate_window)
+        ImGui::End();
 }
 
 void PopulationPyramidRenderer::set_pyramid(const Country &country) {

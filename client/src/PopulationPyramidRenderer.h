@@ -29,7 +29,7 @@ public:
     void render_pyramid_chart();
     void render_population_trend();
     void render_controls(int urbanization_param);
-    void render(int urbanization_param);
+    void render(int urbanization_param, bool seperate_window = false);
     void set_pyramid(const Country &country);
 
     const PopulationPyramid &get_pyramid() const;
