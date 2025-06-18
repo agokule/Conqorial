@@ -121,6 +121,8 @@ unsigned Country::get_millitary_level() const {
 }
 
 unsigned Country::upgrade_millitary_level() {
+    // TODO: remove money here
+    // TODO: also check if we have enough money before doing this
     return ++millitary_level;
 }
 
