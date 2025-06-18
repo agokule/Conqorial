@@ -31,6 +31,9 @@ struct AppState {
     uint8_t player_target_mobilization;
     unsigned troops_selected = 0;
 
+    // this countrys's info will be displayed
+    CountryId country_being_selected = 0;
+    TileIndex selected_tile = 0;
     std::vector<std::function<bool()>> callback_functions;
     Match match;
 
