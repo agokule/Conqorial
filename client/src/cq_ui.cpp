@@ -1,4 +1,5 @@
 #include "cq_ui.h"
+#include "GameState.h"
 #include "imgui.h"
 #include "implot.h"
 #include "Profiler.h"
@@ -11,7 +12,7 @@ void show_population_pyramid_renderer(AppState &state, CountryId country_id) {
     if (&country.get_pyramid() != &state.pyramid_renderer.get_pyramid())
         state.pyramid_renderer.set_pyramid(country);
 
-    state.pyramid_renderer.render(country.get_urbanization_level());
+    state.pyramid_renderer.render(country.get_urbanization_level(), false);
 }
 
 void draw_main_ui(AppState &state, unsigned long long frame_time) {
@@ -24,13 +25,6 @@ void draw_main_ui(AppState &state, unsigned long long frame_time) {
 
     ImGui::Checkbox("Profiler Enabled", &state.profiler_enabled);
     Profiler::instance().enable(state.profiler_enabled);
-
-    static bool population_pyramid = false;
-    ImGui::Checkbox("Show Population Pyramid", &population_pyramid);
-
-    if (population_pyramid) {
-        show_population_pyramid_renderer(state, state.player_country_id);
-    }
 
     int player_target_mobilization = state.player_target_mobilization;
     ImGui::SliderInt("Mobilization Percent", &player_target_mobilization, 1, 100);
@@ -48,9 +42,8 @@ void draw_main_ui(AppState &state, unsigned long long frame_time) {
         state.match.upgrade_country_millitary(state.player_country_id);
     }
 
-    ImGui::Text("Millitary Level: %d", state.match.get_country(state.player_country_id).get_millitary_level());
-    ImGui::Text("Money: %d", state.match.get_country(state.player_country_id).get_money());
-    ImGui::Text("Troops: %d", state.match.get_country(state.player_country_id).get_troops());
+    if (state.match.get_game_state() == GameState::SelectingStartingPoint && ImGui::Button("Start Game"))
+        state.match.set_game_started();
 
     state.frame_rates.AddPoint(SDL_GetTicks(), ImGui::GetIO().Framerate);
 
@@ -74,6 +67,49 @@ void draw_main_ui(AppState &state, unsigned long long frame_time) {
     state.region_cache_needs_update = false; // Reset after update
 
     Profiler::instance().end_frame();
+
+    ImGui::End();
+}
+
+void click_on_map(AppState &state, TileCoor x, TileCoor y) {
+    state.selected_tile = state.match.get_map().get_tile_index(x, y);
+}
+
+void right_click_on_map(AppState &state, TileCoor x, TileCoor y) {
+    MapTile tile = state.match.get_map_tile(x, y);
+    click_on_map(state, x, y);
+    state.country_being_selected = tile.owner;
+}
+
+void display_country_info(AppState &state, CountryId country_id) {
+    if (country_id == 0)
+        return;
+
+    const Country &country = state.match.get_country(country_id);
+    ImGui::Begin("Country Info");
+    ImGui::Text("Name: %s", country.get_name().c_str());
+    ImGui::Text("Millitary Level: %d", country.get_millitary_level());
+    ImGui::Text("Money: %d", country.get_money());
+    ImGui::Text("Number of Troops: %d", country.get_troops());
+    ImGui::Text("Population: %d", country.get_pyramid().get_total_population());
+    ImGui::Text("Economy: %d", country.get_economy());
+
+    if (country_id != state.player_country_id) {
+        if (ImGui::Button("Attack with selected troops?")) {
+            state.match.attack(state.player_country_id, country_id, state.troops_selected);
+            state.region_cache_needs_update = true;
+        }
+    }
+
+    static bool population_pyramid = false;
+    ImGui::Checkbox("Show Population Pyramid", &population_pyramid);
+
+    if (population_pyramid) {
+        ImGui::Separator();
+        show_population_pyramid_renderer(state, country_id);
+        ImGui::Separator();
+    }
+
 
     ImGui::End();
 }

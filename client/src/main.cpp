@@ -80,38 +80,15 @@ SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event) {
         float zoom_factor = 1.0f + event->wheel.y * 0.1f;
         zoom_map(zoom_factor, event->wheel.mouse_x, event->wheel.mouse_y, state);
     } else if (event->type == SDL_EVENT_MOUSE_BUTTON_DOWN) {
-        // Convert mouse coordinates (from the event) to map tile coordinates.
-        float relX = event->button.x - state.dst_map_to_display.x;
-        float relY = event->button.y - state.dst_map_to_display.y;
-        // Scale based on how the map texture is rendered.
-        int tileX = static_cast<int>(relX * state.match.get_map().get_width() / state.dst_map_to_display.w);
-        int tileY = static_cast<int>(relY * state.match.get_map().get_height() / state.dst_map_to_display.h);
-
-        // Ensure the click is within the map bounds.
-        if (tileX < 0 || tileX >= state.match.get_map().get_width() || tileY < 0 || tileY >= state.match.get_map().get_height()) {
+        auto tile {convert_screen_to_map_coors(event->button.x, event->button.y, state)};
+        if (!tile.has_value())
             return SDL_APP_CONTINUE;
-        }
 
-        MapTile tile = state.match.get_map().get_tile(tileX, tileY);
-
-        if (state.match.get_game_state() == GameState::SelectingStartingPoint) {
-            // For example, only allow non-water tiles as starting positions.
-            if (tile.type != MapTileType::Water) {
-                // Set the player's starting tile.
-                state.match.spawn_country(state.player_country_id, tileX, tileY);
-                // Re-create the texture so that the new ownership shows.
-                SDL_DestroyTexture(state.map_texture);
-                state.map_texture = init_map_texture(state.renderer, state.match);
-                SDL_SetTextureScaleMode(state.map_texture, SDL_SCALEMODE_NEAREST);
-                // Transition to the in-game state.
-                state.match.set_game_started();
-            }
-        } else if (state.match.get_game_state() == GameState::InGame) {
-            // If the tile is not already owned by the player, check for an adjacent tile owned by the player.
-            if (tile.owner != state.player_country_id)
-                state.match.attack(state.player_country_id, tile.owner, state.troops_selected);
-        }
-        state.region_cache_needs_update = true;
+        if (event->button.button == SDL_BUTTON_LEFT)
+            click_on_map(state, tile->first, tile->second);
+        else if (event->button.button == SDL_BUTTON_RIGHT)
+            right_click_on_map(state, tile->first, tile->second);
+        return SDL_APP_CONTINUE;
     }
     return SDL_APP_CONTINUE;
 }
