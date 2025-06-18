@@ -115,3 +115,20 @@ void sync_map_texture(SDL_Texture *texture, const Match &match, const std::vecto
     }
 }
 
+std::optional<std::pair<TileCoor, TileCoor>> convert_screen_to_map_coors(float x, float y, const AppState &state) {
+    float relX = x - state.dst_map_to_display.x;
+    float relY = y - state.dst_map_to_display.y;
+    // Scale based on how the map texture is rendered.
+    long tileX = static_cast<long>(relX * state.match.get_map().get_width() / state.dst_map_to_display.w);
+    long tileY = static_cast<long>(relY * state.match.get_map().get_height() / state.dst_map_to_display.h);
+
+    // Ensure the click is within the map bounds.
+    if (tileX < 0 || tileX >= state.match.get_map().get_width() || tileY < 0 || tileY >= state.match.get_map().get_height())
+        return {};
+
+    return {{tileX, tileY}};
+}
+
+std::pair<float, float> convert_map_to_screen_coors(TileCoor x, TileCoor y, const AppState &state) {
+    // TODO: Implement this
+}
