@@ -130,9 +130,8 @@ std::optional<std::pair<TileCoor, TileCoor>> convert_screen_to_map_coors(float x
 }
 
 std::pair<float, float> convert_map_to_screen_coors(TileCoor x, TileCoor y, const AppState &state) {
-    // Scale tile coordinates to relative coordinates within the display rectangle
-    float relX = static_cast<float>(x) * state.dst_map_to_display.w / state.match.get_map().get_width();
-    float relY = static_cast<float>(x) * state.dst_map_to_display.h / state.match.get_map().get_height();
+    float relX = x * state.dst_map_to_display.w / state.match.get_map().get_width();
+    float relY = y * state.dst_map_to_display.h / state.match.get_map().get_height();
     
     // Convert relative coordinates to absolute screen coordinates
     float screenX = relX + state.dst_map_to_display.x;
