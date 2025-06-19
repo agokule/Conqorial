@@ -1,5 +1,9 @@
 #include "cq_ui.h"
+#include "ClientMap.h"
 #include "GameState.h"
+#include "Logging.h"
+#include "MapTile.h"
+#include "MapTileTypes.h"
 #include "imgui.h"
 #include "implot.h"
 #include "Profiler.h"
@@ -110,6 +114,44 @@ void display_country_info(AppState &state, CountryId country_id) {
         ImGui::Separator();
     }
 
+    ImGui::End();
+}
+
+void display_tile_dialogs(AppState &state) {
+    CONQORIAL_ASSERT_ALL(state.selected_tile.has_value(), "No tile selected", return;);
+    TileIndex tile_index = *state.selected_tile;
+    auto [mx, my] = state.match.get_map().get_tile_coors(tile_index);
+    MapTile tile = state.match.get_map_tile(mx, my);
+    auto [sx, sy] = convert_map_to_screen_coors(mx, my, state);
+
+    if (tile.type == MapTileType::Water)
+        return;
+
+    ImGui::SetNextWindowPos({sx, sy});
+    ImGui::Begin("Tile Info", nullptr, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse);
+
+    if (state.match.get_game_state() == GameState::SelectingStartingPoint) {
+        if (ImGui::Button("Set Starting Point")) {
+            state.match.spawn_country(state.player_country_id, mx, my);
+            state.match.set_game_started();
+            state.selected_tile = std::nullopt;
+        }
+        ImGui::End();
+        return;
+    }
+
+    if (ImGui::Button("Attack")) {
+        state.match.attack(state.player_country_id, tile.owner, state.troops_selected);
+        state.region_cache_needs_update = true;
+        state.selected_tile = std::nullopt;
+    }
+
+    if (tile.elevation >= MapTileType::Beach && tile.elevation < MapTileType::Grass &&
+            ImGui::Button("Naval Invade")) {
+        // TODO: Implement this
+        CQ_LOG_DEBUG << "Naval invade\n";
+        state.selected_tile = std::nullopt;
+    }
 
     ImGui::End();
 }

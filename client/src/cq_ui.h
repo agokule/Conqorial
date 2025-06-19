@@ -9,4 +9,5 @@ void click_on_map(AppState &state, TileCoor x, TileCoor y);
 void right_click_on_map(AppState &state, TileCoor x, TileCoor y);
 
 void display_country_info(AppState &state, CountryId country_id);
+void display_tile_dialogs(AppState &state);
 

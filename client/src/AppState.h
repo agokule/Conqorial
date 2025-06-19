@@ -2,6 +2,7 @@
 #include <SDL3/SDL.h>
 #include <cstdint>
 #include <functional>
+#include <optional>
 #include <vector>
 #include "NameRendering.h"
 #include "Country.h"
@@ -33,7 +34,7 @@ struct AppState {
 
     // this countrys's info will be displayed
     CountryId country_being_selected = 0;
-    TileIndex selected_tile = 0;
+    std::optional<TileIndex> selected_tile = {};
     std::vector<std::function<bool()>> callback_functions;
     Match match;
 

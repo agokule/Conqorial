@@ -137,6 +137,8 @@ SDL_AppResult SDL_AppIterate(void *appstate) {
     draw_main_ui(state, frame_time);
     if (state.country_being_selected != 0)
         display_country_info(state, state.country_being_selected);
+    if (state.selected_tile.has_value())
+        display_tile_dialogs(state);
 
     Profiler::instance().start_frame("Draw Map");
     draw_map_texture(state.map_texture, renderer, state.dst_map_to_display);
