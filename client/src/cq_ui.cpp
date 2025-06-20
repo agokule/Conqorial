@@ -39,6 +39,14 @@ void draw_main_ui(AppState &state, unsigned long long frame_time) {
     auto troops_max = state.match.get_country(state.player_country_id).get_troops() / 2;
     int troops_selected {static_cast<int>(std::clamp(state.troops_selected, 0u, troops_max))};
 
+    float x, y;
+    SDL_GetMouseState(&x, &y);
+    auto coors = convert_screen_to_map_coors(x, y, state);
+    if (coors.has_value()) {
+        auto [mx, my] = coors.value();
+        ImGui::Text("Mouse: %d, %d", mx, my);
+    }
+
     ImGui::SliderInt("Troops", &troops_selected, 0, troops_max);
     state.troops_selected = troops_selected;
 
