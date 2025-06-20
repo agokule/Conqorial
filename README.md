@@ -38,6 +38,8 @@ python -m http.server
 
 4. Open your web browser and navigate to `http://localhost:8000`
  * If you want to run the `Debug` version, go to the `Debug` folder, otherwise, go to the `Release` folder.
-  * **Tip:** If you are running Debug mode, you can increase performance a little bit by deleting the console output html element using Right Click -> Inspect -> Right Click again -> Delete Element. You will have to use the browser's console to see any output now though.
+    * **Tip:** If you are running Debug mode, you can increase performance a little bit by deleting the console output html element using Right Click -> Inspect -> Right Click again -> Delete Element. You will have to use the browser's console to see any output now though.
  * Then click on the html file to start the game.
+ * **Note:** If you are having trouble with say, trying to scroll to zoom in/out, or right clicking on a country, you probably have one of the imgui windows selected.
+    * In that case, try unselecting it by double clicking on some water tile
 
