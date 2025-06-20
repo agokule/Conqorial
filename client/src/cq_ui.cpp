@@ -159,6 +159,8 @@ void display_tile_dialogs(AppState &state) {
         // TODO: Implement this
         CQ_LOG_DEBUG << "Naval invade\n";
         state.selected_tile = std::nullopt;
+
+        state.match.naval_invade(state.player_country_id, tile_index, state.troops_selected);
     }
 
     ImGui::End();

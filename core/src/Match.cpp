@@ -1,4 +1,5 @@
 #include "Match.h"
+#include "NavalInasion.h"
 #include "optional"
 #include "Logging.h"
 #include "typedefs.h"
@@ -15,7 +16,7 @@ Match::Match(unsigned width, unsigned height): countries {}, map {width, height}
     countries.emplace(0, Country { 0, "Neutral", {0, 0, 0} });
     tiles_owned_by_country[0] = {};
 
-    spawn_and_create_ai_countries();
+    //spawn_and_create_ai_countries();
 }
 
 const Country &Match::get_country(CountryId id) const {
@@ -78,6 +79,11 @@ std::vector<std::pair<TileCoor, TileCoor>> Match::tick() {
         auto tiles_changed = update_attacks();
         result.insert(result.end(), tiles_changed.begin(), tiles_changed.end());
     }
+    if (check_time_to_update(last_naval_inasion_update, naval_inasion_update_intervalCE)) {
+        last_naval_inasion_update = now;
+        auto tiles_changed = update_naval_inasions();
+        result.insert(result.end(), tiles_changed.begin(), tiles_changed.end());
+    }
     if (check_time_to_update(last_population_update, population_update_intervalCE)) {
         last_population_update = now;
         update_populations();
@@ -101,6 +107,24 @@ std::vector<std::pair<TileCoor, TileCoor>> Match::update_attacks() {
                     break;
             }
             tiles_changed.insert(tiles_changed.end(), tiles_changed_this_attack.begin(), tiles_changed_this_attack.end());
+        }
+    }
+    return tiles_changed;
+}
+
+std::vector<std::pair<TileCoor, TileCoor>> Match::update_naval_inasions() {
+    std::vector<std::pair<TileCoor, TileCoor>> tiles_changed;
+    for (auto &[attacker, naval_inasions] : naval_inasions) {
+        if (naval_inasions.empty())
+            continue;
+        for (auto it = naval_inasions.begin(); it != naval_inasions.end(); ++it) {
+            auto tiles_changed_this_attack = it->advance(map, tiles_owned_by_country, countries);
+            tiles_changed.insert(tiles_changed.end(), tiles_changed_this_attack.begin(), tiles_changed_this_attack.end());
+            if (tiles_changed_this_attack.empty() || it->is_done()) {
+                it = naval_inasions.erase(it);
+                if (naval_inasions.empty() || it == naval_inasions.end())
+                    break;
+            }
         }
     }
     return tiles_changed;
@@ -204,6 +228,12 @@ void Match::attack(CountryId attacker, CountryId defender_id, unsigned troops_to
         std::forward_as_tuple(defender_id),
         std::forward_as_tuple(attacker, defender_id, troops_to_attack)
     );
+}
+
+
+void Match::naval_invade(CountryId attacker, TileIndex destination_tile, unsigned troops_to_attack) {
+    auto &ongoing_naval_inasions_for_player = naval_inasions[attacker];
+    ongoing_naval_inasions_for_player.emplace_back(destination_tile, get_country(attacker).get_id(), troops_to_attack, map);
 }
 
 
