@@ -140,7 +140,8 @@ void display_tile_dialogs(AppState &state) {
 
     if (state.match.get_game_state() == GameState::SelectingStartingPoint) {
         if (ImGui::Button("Set Starting Point")) {
-            state.match.spawn_country(state.player_country_id, mx, my);
+            auto tiles_changed = state.match.spawn_country(state.player_country_id, mx, my);
+            sync_map_texture(state.map_texture, state.match, tiles_changed);
             state.match.set_game_started();
             state.selected_tile = std::nullopt;
         }

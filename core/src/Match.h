@@ -44,7 +44,7 @@ public:
 
     const Country &get_country(CountryId id) const;
     const Country &new_country(std::string name, bool is_player, Color color);
-    void spawn_country(CountryId id, TileCoor x, TileCoor y);
+    std::vector<std::pair<TileCoor, TileCoor>> spawn_country(CountryId id, TileCoor x, TileCoor y);
 
     void set_game_started();
     GameState get_game_state() const;

@@ -1,5 +1,4 @@
 #include "Match.h"
-#include "NavalInasion.h"
 #include "optional"
 #include "Logging.h"
 #include "typedefs.h"
@@ -30,7 +29,7 @@ const Country &Match::new_country(std::string name, bool is_player, Color color)
     return countries.insert({ id, Country { id, name, color, random_arg } }).first->second;
 }
 
-void Match::spawn_country(CountryId id, TileCoor x, TileCoor y) {
+std::vector<std::pair<TileCoor, TileCoor>> Match::spawn_country(CountryId id, TileCoor x, TileCoor y) {
     std::array<std::pair<TileCoor, TileCoor>, 25> coords {
         std::pair {x, y},
         {x + 1, y}, {x, y + 1},
@@ -46,12 +45,15 @@ void Match::spawn_country(CountryId id, TileCoor x, TileCoor y) {
         {x + 2, y + 1}, {x + 2, y - 1},
         {x - 2, y + 1}, {x - 2, y - 1},
     };
+    std::vector<std::pair<TileCoor, TileCoor>> result;
     for (auto &coord : coords) {
         if (map.get_tile(coord).owner != 0 ||
             map.get_tile(coord).type == MapTileType::Water)
             continue;
         set_map_tile(coord, id);
+        result.push_back(coord);
     }
+    return result;
 }
 
 void Match::set_game_started() {
