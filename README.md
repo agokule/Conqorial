@@ -6,6 +6,12 @@ A 2D multiplayer web game inspired by territorial.io and warfront.io
 
 Below are steps you can use in order to build and run the game (assuming you have already downloaded the code from GitHub).
 
+* **Note:** make sure you download the code with this command, don't use github's "download" button:
+
+```bash
+git clone https://github.com/agokule/Conqorial.git --recurse-submodules
+```
+
 Note that you need the following prerequisites:
 
 - cmake
