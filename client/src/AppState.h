@@ -46,7 +46,7 @@ struct AppState {
           color({ 0, 0, 0, 255 }), last_frame_time {SDL_GetTicks()},
           region_cache {}, dst_map_to_display({ 0, 0, (float)map.get_width(), (float)map.get_height()}),
           player_target_mobilization {2},
-          match {map.get_width(), map.get_height()}, pyramid_renderer {}, profiler_enabled(true)
+          match {map.get_width(), map.get_height()}, pyramid_renderer {}, profiler_enabled {false}
           {
         player_country_id = match.new_country("Player", true, {0,0,0}).get_id();
     };
