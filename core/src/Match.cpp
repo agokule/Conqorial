@@ -15,7 +15,7 @@ Match::Match(unsigned width, unsigned height): countries {}, map {width, height}
     countries.emplace(0, Country { 0, "Neutral", {0, 0, 0} });
     tiles_owned_by_country[0] = {};
 
-    //spawn_and_create_ai_countries();
+    spawn_and_create_ai_countries();
 }
 
 const Country &Match::get_country(CountryId id) const {
