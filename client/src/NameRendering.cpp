@@ -11,22 +11,6 @@
 #include <string>
 #include <vector>
 
-// Initialize static member
-uint64_t CacheTimestamp::last_update = 0;
-
-uint64_t CacheTimestamp::get_current_time() {
-    return SDL_GetTicks();
-}
-
-bool CacheTimestamp::should_update(uint64_t interval_ms) {
-    uint64_t current_time = get_current_time();
-    if (current_time - last_update > interval_ms) {
-        last_update = current_time;
-        return true;
-    }
-    return false;
-}
-
 // Find the largest inscribed rectangle within a region
 void find_largest_rectangle(const std::vector<bool>& grid,
                           int grid_width, int grid_height,

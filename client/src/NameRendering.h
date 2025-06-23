@@ -41,13 +41,6 @@ struct DistanceCell {
 
 using RegionCache = std::unordered_map<CountryId, std::vector<RegionWithRectangle>>;
 
-// Timestamp for cache invalidation
-struct CacheTimestamp {
-    static uint64_t last_update;
-    static uint64_t get_current_time();
-    static bool should_update(uint64_t interval_ms);
-};
-
 // Find the largest inscribed rectangle within a region
 void find_largest_rectangle(const std::vector<bool>& grid, 
                           int grid_width, int grid_height,
