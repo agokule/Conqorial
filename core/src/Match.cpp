@@ -47,6 +47,8 @@ std::vector<std::pair<TileCoor, TileCoor>> Match::spawn_country(CountryId id, Ti
     };
     std::vector<std::pair<TileCoor, TileCoor>> result;
     for (auto &coord : coords) {
+        if (coord.first < 0 || coord.first >= map.get_width() || coord.second < 0 || coord.second >= map.get_height())
+            continue;
         if (map.get_tile(coord).owner != 0 ||
             map.get_tile(coord).type == MapTileType::Water)
             continue;
